@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Neucha&display=swap');
+
+body, input {
+  font: 13px "Lucida Grande", Helvetica, Arial, sans-serif;
+  color:#555;
+}
+
+h1 {
+  font-family: 'Neucha', cursive;
+  width:660px;
+  float:left;
+}
+
+h2 {
+  font-size: 16px;
+  font-weight:normal;
+}
+
+a {
+  color:#06b;
+  text-decoration:none;
+}
+
+a:hover {
+  color:#38f;
+  text-decoration:underline;
+}
+
+.label {
+  font-weight: bold;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  text-transform: capitalize;
+}
+
+.profile {
+  width:130px;
+  height:130px;
+  float:left;
+  margin-right:12px;
+}
+
+.profile-link {
+  padding:4px;
+  width:120px;
+  height:120px;
+  border:2px solid #ccc;
+  vertical-align: middle;
+  float:left;
+  font-family: 'Neucha', cursive;
+  font-size:24px;
+  font-weight: bold;
+}
+
+#content {
+  margin-left:60px;
+}
+
+#data-label {
+  text-transform:capitalize;
+  width:706px;
+  float:left;
+}
+
+#canvas-container {
+  width:800px;
+  display:none;
+}
+
+#data-canvas {
+  width:800px;
+  height:300px;
+  margin-left:-60px;
+  clear:left;
+}
+
+#close-canvas {
+  text-align: center;
+  font-size: 15px;
+  font-weight: bold;
+  width:20px;
+  border: 1px solid #aaa;
+  display: block;
+  float:left;
+  margin:8px;
+  padding-bottom:2px;
+  color: #aaa;
+  text-decoration: none;
+}
+#close-canvas:hover {
+  background-color: #aaa;
+  color: #fff;
+}
+
+#change-profile {
+  color:#999;
+  font-size:11px;
+  float:left;
+  margin-top:28px;
+}
+
+#data-table {
+  width:740px;
+  margin-bottom:4px;
+  border-collapse:collapse;
+  clear:left;
+}
+
+#data-table th, #data-table td {
+  border:1px solid #888;
+  padding:3px;
+  text-align:left;
+}
+
+#data-table th a {
+  text-transform:capitalize;
+}
+
+#data-table input {
+  padding:0;
+  border-width:0;
+  width: 100%;
+}
+
+#edit-profile {
+  clear:left;
+  display:none;
+  padding-top: 60px;
+}

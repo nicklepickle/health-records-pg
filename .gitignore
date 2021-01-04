@@ -1,0 +1,8 @@
+.DS_Store
+.DS_Store?
+.Trashes
+Thumbs.db
+node_modules
+package-lock.json
+config.js
+eco.config.js

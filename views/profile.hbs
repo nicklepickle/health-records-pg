@@ -1,0 +1,29 @@
+
+<h2>Select Profile</h2>
+
+{{#each users}}
+<div class="profile">
+  <a href="/login/{{this.id}}" class="profile-link">{{this.username}}</a>
+  <a href="javascript:client.edit({{this.id}});">Edit</a>
+</div>
+{{/each}}
+<div class="profile">
+  <a href="javascript:client.edit(0);" class="profile-link">New Profile</a>
+</div>
+
+<div id="edit-profile">
+<form action="/profile" method="post">
+  <input type="hidden" name="id" id="id" />
+  <label for="username" class="label">Name</label><br />
+  <input type="text" name="username" id="username" />
+  <div class="label">Statistics</div>
+  {{#each fields}}
+  <div class="field-select">
+    <input type="checkbox" name="field-{{this}}" id="field-{{ID this}}" />
+    <label for="field-{{this}}">{{this}}</label>
+  </div>
+  {{/each}}
+  <br />
+  <input type="submit" value="Save">
+</form>
+</div>

@@ -1,0 +1,23 @@
+create table records (
+  "id" serial primary key,
+  "user" int not null,
+  "date" date not null,
+  "modified" date,
+  "weight" real,
+  "systolic" real,
+  "diastolic" real,
+  "pulse" real,
+  "blood sugar" real,
+  "alcohol" real,
+  "coffee" real,
+  "exercise" real,
+  "steps" real,
+  "distance ran" real,
+  "distance walked" real,
+  "distance biked" real,
+  "calories" real,
+  "water" real,
+  "sleep" real,
+  "basal temp" real,
+  "body temp" real
+)

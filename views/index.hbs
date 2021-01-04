@@ -1,0 +1,19 @@
+
+<h1>{{user.username}}</h1>
+<a href="/profile" id="change-profile">Change Profile</a>
+<div id="canvas-container">
+  <h2 id="data-label"></h2>
+  <a href="javascript:client.closeCanvas()" id="close-canvas">&times;</a>
+  <div id="data-canvas"></div>
+</div>
+<form method="post" action="/records">
+  <input type="hidden" name="user" id="user" value="{{user.id}}" />
+  <table id="data-table">
+    <tr>
+      {{#each fields}}
+      <th><a href="javascript:client.plotField('{{this}}');">{{this}}</a></th>
+      {{/each}}
+    </tr>
+  </table>
+  <input type="submit" value="New Entry" />
+</form>

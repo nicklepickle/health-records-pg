@@ -1,0 +1,16 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <link rel="stylesheet" href="main.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/1.58.4/plotly.min.js"></script>
+  {{#each scripts}}
+  <script src="{{this}}"></script>
+  {{/each}}
+</head>
+<body>
+<div id="content">
+{{{body}}}
+</div>
+</body>
+</html>
