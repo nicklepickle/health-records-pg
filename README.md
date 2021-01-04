@@ -1,4 +1,4 @@
-#health-records-pg
+# health-records-pg
 
 health-records-pg is a simple web app using NodeJS and Postrges to store and visualize health records.
 
