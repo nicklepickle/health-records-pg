@@ -3,3 +3,21 @@
 health-records-pg is a simple web app using NodeJS and Postrges to store and visualize health records.
 
 Plotty.js is used to plot graphs of the daily records.
+
+Not included in this repository is the config.js file at the root of the project. This file contains the credentials used to log in to Postgres. Below is an example of what this file should contain.
+
+```
+module.exports = {
+  database: {
+    host: "localhost",
+    user: "mydbuser",
+    password: "mydbpassword",
+    database: "health",
+    port: 5432
+  },
+  server: {
+    approot: __dirname,
+    port:8300
+  }
+};
+```
