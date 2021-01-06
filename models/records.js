@@ -16,22 +16,32 @@ let records = {
       client.release();
     }
   },
-  setRecord: async(data) => {
+  setRecord: async(fields, data) => {
     const client = await pool.getClient();
     try {
-      let keys = Object.keys(data);
-      let values = [];
-
-      for(var i = 0; i < keys.length; i++) {
-        //@todo - sanitize date and key strings
-        let value = (keys[i] == 'date' ? "'" + data[keys[i]] + "'" : Number(data[keys[i]]));
-        keys[i] = '"' +keys[i] + '"';
+      values = [];
+      for(var i = 0; i < fields.length; i++) {
+        // @todo - sanitize date and key strings
+        let value = (fields[i] == 'date' ? "'" + data[fields[i]] + "'" : Number(data[fields[i]]));
+        fields[i] = '"' +fields[i] + '"';
         values.push(value);
       }
-      keys.push('modified');
+
+      fields.push('modified');
       values.push('NOW()');
 
-      const sql = 'insert into records ('+ keys.join() +') values (' + values.join() + ')';
+      let sql = '';
+      if (data.id && data.id > 0) {
+        let pairs = [];
+        for (let i=0; i<fields.length; i++) {
+          pairs.push(fields[i] + '=' + values[i]);
+        }
+        sql += 'update records set ' + pairs.join() + ' where id = ' + data.id;
+      }
+      else if (data.user && data.user > 1) {
+        sql = 'insert into records ('+ fields.join() +') values (' + values.join() + ')';
+      }
+
       console.log('running: ' + sql);
       const res = await client.query(sql);
       return res;

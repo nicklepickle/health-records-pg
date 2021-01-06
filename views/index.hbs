@@ -1,5 +1,5 @@
 
-<h1>{{user.username}}</h1>
+<h1><a href="/">{{user.username}}</a></h1>
 <a href="/profile" id="change-profile">Change Profile</a>
 <div id="canvas-container">
   <h2 id="data-label"></h2>
@@ -8,12 +8,7 @@
 </div>
 <form method="post" action="/records">
   <input type="hidden" name="user" id="user" value="{{user.id}}" />
-  <table id="data-table">
-    <tr>
-      {{#each fields}}
-      <th><a href="javascript:client.plotField('{{this}}');">{{this}}</a></th>
-      {{/each}}
-    </tr>
-  </table>
-  <input type="submit" value="New Entry" />
+  <input type="hidden" name="id" id="id" value="0" />
+  <table id="data-table"></table>
+  <input type="submit" value="Submit" />
 </form>

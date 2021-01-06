@@ -30,16 +30,32 @@ var client = {
     $('#canvas-container').show(client.transition);
   },
 
-  renderTable: function() {
+  renderTable: function(id) {
     var dataTable = $('#data-table');
+    var headers = $('<tr></tr>');
+    for (var i = 0; i < client.dataFields.length; i++) {
+      var field = client.dataFields[i];
+      headers.append('<th><a href="#" onclick="client.plotField(\''+field+'\')">' +
+        field + '</a></th>');
+    };
+
+    $('#data-table').html(headers);
+
     for(var i=0; i < client.data.length; i++) {
       var row ='<tr>';
       for(var ii = 0; ii < client.dataFields.length; ii++) {
-        var cell = client.data[i][client.dataFields[ii]];
+        var field = client.dataFields[ii];
+        var cell = client.data[i][field];
         if (cell) {
-          if (client.dataFields[ii] == "date") {
+          if (client.data[i].id == id) {
+            // this is the row selected for editing
+            var value = field == "date" ? new Date(cell).toLocaleDateString('en-US') : cell;
+            cell = '<input type="text" value="'+value+'" name="'+field+'" /></td>';
+          }
+          else if (field== "date") {
             var dt = new Date(cell);
-            cell = dt.toLocaleDateString('en-US');
+            cell = '<a href="javascript:client.renderTable('+client.data[i]['id']+')">' +
+              dt.toLocaleDateString('en-US') + '</a>';
           }
           row +='<td>'+cell+'</td>';
         }
@@ -50,48 +66,63 @@ var client = {
       row += '</tr>';
       dataTable.append(row);
     }
+    if (!id) {
+      // no id is selected for editing so allow new records
+      var row ='<tr id="new-entry" style="display:none;">';
+      var last = client.data.length > 0 ? client.data[client.data.length - 1] : null;
+      for(var i = 0; i < client.dataFields.length; i++) {
+        var value = '';
+        if (client.dataFields[i] == 'date') {
+          value = new Date().toLocaleDateString('en-US');
+        }
+        else if (last) {
+          value = last[client.dataFields[i]];
+        }
+        row +='<td><input type="text" value="'+value+'" name="'+client.dataFields[i]+'" /></td>';
+      }
+      row += '</tr>';
+      dataTable.append(row);
 
-    var row ='<tr id="new-entry" style="display:none;">';
-    var last = client.data.length > 0 ? client.data[client.data.length - 1] : null;
-    for(var i = 0; i < client.dataFields.length; i++) {
-      var value = '';
-      if (client.dataFields[i] == 'date') {
-        value = new Date().toLocaleDateString('en-US');
-      }
-      else if (last) {
-        value = last[client.dataFields[i]];
-      }
-      row +='<td><input type="text" value="'+value+'" name="'+client.dataFields[i]+'" /></td>';
+      //@todo - fix this if there's a second form
+      $('input[type="submit"]').attr('value','New Entry');
+      $('form').submit(function() {
+        if ($('#new-entry').is(':hidden')) {
+          $('#new-entry').show();
+          $('input[name="date"]').focus();
+          $('input[type="submit"]').attr('value','Submit');
+          return false;
+        }
+        return true;
+      });
     }
-    row += '</tr>';
-    dataTable.append(row);
-
-    //@todo - fix this if there's a second form
-    $('form').submit(function() {
-      if ($('#new-entry').is(':hidden')) {
-        $('#new-entry').show();
-        $('input[name="date"]').focus();
-        $('input[type="submit"]').attr('value','Submit');
-        return false;
-      }
-      return true;
-    });
+    else {
+      $('#id').val(id);
+      $('input[name="date"]').focus();
+      $('input[type="submit"]').attr('value','Submit');
+      $('form').submit(function() { return true; });
+    }
   },
 
   closeCanvas: function() {
     $('#canvas-container').hide(client.transition);
+  },
+  getCookieValue: function (a) {
+    // https://stackoverflow.com/questions/5639346/
+    var b = document.cookie.match('(^|;)\\s*' + a + '\\s*=\\s*([^;]+)');
+    return b ? b.pop() : '';
   }
 }
 
-$(document).ready(function() {
-  var user = $('#user').val();
-  $('#data-table th a').each(function() {
-    client.dataFields.push($(this).html());
-  });
 
+$(document).ready(function() {
+  var c = decodeURIComponent(client.getCookieValue('user'));
+  var user = $.parseJSON(c.substr(2)); // substr to remove "j:"
+  // console.log('user = ' + JSON.stringify(user));
+  client.dataFields = user.fields.split(',');
+  client.dataFields.unshift('date');
   $.ajax({
      dataType: 'json',
-     url: '/records/' + user,
+     url: '/records/' + user.id,
      success: function (response) {
         client.data = response;
         client.renderTable();

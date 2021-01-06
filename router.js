@@ -68,7 +68,13 @@ router.get('/records/:id', async(req, res, next) => {
   return res.send(rows);
 });
 router.post('/records', async(req, res, next) => {
-  await records.setRecord(req.body);
+  if (!req.cookies.user) {
+    return res.redirect('/profile');
+  }
+  let fields = req.cookies.user.fields.split(',');
+  fields.unshift('date','user');
+
+  await records.setRecord(fields, req.body);
   return res.redirect('/');
 });
 
