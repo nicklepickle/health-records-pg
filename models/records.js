@@ -38,7 +38,7 @@ let records = {
         }
         sql += 'update records set ' + pairs.join() + ' where id = ' + data.id;
       }
-      else if (data.user && data.user > 1) {
+      else if (data.user && data.user > 0) {
         sql = 'insert into records ('+ fields.join() +') values (' + values.join() + ')';
       }
 
