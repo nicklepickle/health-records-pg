@@ -1,7 +1,6 @@
 var client = {
   data: [],
   dataFields: [],
-  transition: 90,
   traceField: function (field) {
     var trace = {x:[], y:[], mode: 'lines+markers', name: field};
     for(var i=0; i<client.data.length; i++) {
@@ -27,7 +26,7 @@ var client = {
       Plotly.newPlot('data-canvas', [trace]);
       $('#data-label').html(field);
     }
-    $('#canvas-container').show(client.transition);
+    $('#canvas-container').show();
   },
 
   renderTable: function(id) {

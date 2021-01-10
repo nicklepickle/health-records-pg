@@ -50,6 +50,10 @@ a:hover {
   font-family: 'Neucha', cursive;
   font-size:24px;
   font-weight: bold;
+  background-image: url('user.png');
+  background-size: 50%;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 #content {
@@ -104,6 +108,7 @@ a:hover {
   margin-bottom:4px;
   border-collapse:collapse;
   clear:left;
+  table-layout: fixed;
 }
 
 #data-table th, #data-table td {
