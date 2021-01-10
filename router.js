@@ -58,15 +58,28 @@ router.get('/user/:id', async(req, res, next) => {
   var user = await users.getUser(req.params.id);
   return res.send(user);
 });
+
 router.get('/login/:id', async(req, res, next) => {
   var user = await users.getUser(req.params.id);
   res.cookie('user', user);
   return res.redirect('/');
 });
+
 router.get('/records/:id', async(req, res, next) => {
-  var rows = await records.getRecords(req.params.id);
-  return res.send(rows);
+  if (!req.query.format || req.query.format == 'json') {
+    var rows = await records.getRecords(req.params.id);
+    return res.send(rows);
+  }
+  else if (req.query.format == 'csv') {
+    var user = await users.getUser(req.params.id);
+    var fields = user.fields.split(',');
+    var csv = await records.getCsv(user.id, fields);
+    res.set('Content-Type', 'application/octet-stream');
+    res.attachment('health-records.csv');
+    return res.send(Buffer.from(csv));
+  }
 });
+
 router.post('/records', async(req, res, next) => {
   if (!req.cookies.user) {
     return res.redirect('/profile');

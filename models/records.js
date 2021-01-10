@@ -71,6 +71,29 @@ let records = {
     finally {
       client.release();
     }
+  },
+  getCsv: async(user, fields) => {
+    try {
+      var rows = await records.getRecords(user);
+      fields.unshift('date')
+      var csv = fields.join() + '\n';
+      for(var i=0; i<rows.length; i++) {
+        var vals = []
+        for(var ii=0; ii<fields.length; ii++) {
+          var val = rows[i][fields[ii]];
+          if (fields[ii] == 'date' || fields[ii] == 'modified') {
+            var dt = new Date(rows[i][fields[ii]]);
+            val = dt.toLocaleDateString('en-US')
+          }
+          vals.push(val);
+        }
+        csv += vals.join() + '\n';
+      }
+      return csv;
+    }
+    catch (error) {
+      console.error(error);
+    }
   }
 }
 

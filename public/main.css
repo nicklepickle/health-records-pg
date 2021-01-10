@@ -7,8 +7,7 @@ body, input {
 
 h1 {
   font-family: 'Neucha', cursive;
-  width:660px;
-  float:left;
+  margin-bottom:10px;
 }
 
 h2 {
@@ -56,25 +55,32 @@ a:hover {
   background-position: center;
 }
 
+.side-link {
+  color:#999;
+  font-size:11px;
+  float:right;
+  margin-top:-28px;
+}
+
 #content {
+  width:800px;
   margin-left:60px;
 }
 
 #data-label {
   text-transform:capitalize;
-  width:706px;
+  width:700px;
   float:left;
 }
 
 #canvas-container {
-  width:800px;
   display:none;
 }
 
 #data-canvas {
-  width:800px;
-  height:300px;
   margin-left:-60px;
+  width:864px;
+  height:300px;
   clear:left;
 }
 
@@ -85,26 +91,20 @@ a:hover {
   width:20px;
   border: 1px solid #aaa;
   display: block;
-  float:left;
-  margin:8px;
+  float:right;
+  margin-top:8px;
   padding-bottom:2px;
   color: #aaa;
   text-decoration: none;
 }
+
 #close-canvas:hover {
   background-color: #aaa;
   color: #fff;
 }
 
-#change-profile {
-  color:#999;
-  font-size:11px;
-  float:left;
-  margin-top:28px;
-}
-
 #data-table {
-  width:740px;
+  width:100%;
   margin-bottom:4px;
   border-collapse:collapse;
   clear:left;
@@ -125,6 +125,11 @@ a:hover {
   padding:0;
   border-width:0;
   width: 100%;
+}
+
+#data-form div {
+  margin-top:14px;
+  height:28px;
 }
 
 #edit-profile {
