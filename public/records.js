@@ -44,23 +44,20 @@ var client = {
       var row ='<tr>';
       for(var ii = 0; ii < client.dataFields.length; ii++) {
         var field = client.dataFields[ii];
-        var cell = client.data[i][field];
-        if (cell) {
-          if (client.data[i].id == id) {
-            // this is the row selected for editing
-            var value = field == "date" ? new Date(cell).toLocaleDateString('en-US') : cell;
-            cell = '<input type="text" value="'+value+'" name="'+field+'" /></td>';
-          }
-          else if (field== "date") {
-            var dt = new Date(cell);
-            cell = '<a href="javascript:client.renderTable('+client.data[i]['id']+')">' +
-              dt.toLocaleDateString('en-US') + '</a>';
-          }
-          row +='<td>'+cell+'</td>';
+        var cell = client.data[i][field] == null ? '' : client.data[i][field];
+
+        if (client.data[i].id == id) {
+          // this is the row selected for editing
+          var value = field == "date" ? new Date(cell).toLocaleDateString('en-US') : cell;
+          cell = '<input type="text" value="'+value+'" name="'+field+'" /></td>';
         }
-        else {
-          row +='<td></td>';
+        else if (field== "date") {
+          var dt = new Date(cell);
+          cell = '<a href="javascript:client.renderTable('+client.data[i]['id']+')">' +
+            dt.toLocaleDateString('en-US') + '</a>';
         }
+        row +='<td>'+cell+'</td>';
+
       }
       row += '</tr>';
       dataTable.append(row);
@@ -74,7 +71,7 @@ var client = {
         if (client.dataFields[i] == 'date') {
           value = new Date().toLocaleDateString('en-US');
         }
-        else if (last) {
+        else if (last && last[client.dataFields[i]]) {
           value = last[client.dataFields[i]];
         }
         row +='<td><input type="text" value="'+value+'" name="'+client.dataFields[i]+'" /></td>';
@@ -83,12 +80,12 @@ var client = {
       dataTable.append(row);
 
       //@todo - fix this if there's a second form
-      $('input[type="submit"]').attr('value','New Entry');
-      $('form').submit(function() {
+      $('#data-form input[type="submit"]').attr('value','New Entry');
+      $('#data-form').submit(function() {
         if ($('#new-entry').is(':hidden')) {
           $('#new-entry').show();
-          $('input[name="date"]').focus();
-          $('input[type="submit"]').attr('value','Submit');
+          $('#data-form input[name="date"]').focus();
+          $('#data-form input[type="submit"]').attr('value','Submit');
           return false;
         }
         return true;
@@ -96,8 +93,8 @@ var client = {
     }
     else {
       $('#id').val(id);
-      $('input[name="date"]').focus();
-      $('input[type="submit"]').attr('value','Submit');
+      $('#data-form input[name="date"]').focus();
+      $('#data-form input[type="submit"]').attr('value','Submit');
       $('form').submit(function() { return true; });
     }
   },

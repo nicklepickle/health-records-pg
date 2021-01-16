@@ -1,5 +1,5 @@
 {
-  "name": "health",
+  "name": "health-records",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -12,6 +12,7 @@
     "express": "~4.16.1",
     "hbs": "^4.1.1",
     "morgan": "~1.9.1",
-    "pg": "^8.5.1"
+    "pg": "^8.5.1",
+    "pm2": "^4.5.1"
   }
 }

@@ -29,7 +29,7 @@ let records = {
           }
           value = "'" + data[fields[i]] + "'";
         }
-        else if (!isNaN(data[fields[i]])) {
+        else if (data[fields[i]] && !isNaN(data[fields[i]])) {
           value = Number(data[fields[i]]);
         }
 
