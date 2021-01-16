@@ -21,8 +21,18 @@ let records = {
     try {
       values = [];
       for(var i = 0; i < fields.length; i++) {
-        // @todo - sanitize date and key strings
-        let value = (fields[i] == 'date' ? "'" + data[fields[i]] + "'" : Number(data[fields[i]]));
+        let value = 'null';
+        if (fields[i] == 'date') {
+          if (!data.date.match(/[0-9]+\/[0-9]+\/[0-9]+/)) {
+            console.log('date field ' + data.date + ' could not be parsed');
+            return false;
+          }
+          value = "'" + data[fields[i]] + "'";
+        }
+        else if (!isNaN(data[fields[i]])) {
+          value = Number(data[fields[i]]);
+        }
+
         fields[i] = '"' +fields[i] + '"';
         values.push(value);
       }
