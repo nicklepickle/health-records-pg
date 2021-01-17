@@ -1,8 +1,10 @@
 var client = {
   data: [],
   dataFields: [],
-  traceField: function (field) {
-    var trace = {x:[], y:[], mode: 'lines+markers', name: field};
+  // scatter works better for fields that can't be zero or you would be dead
+  scatterFields: ['weight','pulse','basal temp','body temp'],
+  traceField: function (field, type) {
+    var trace = {x:[], y:[], type: type, name: field};
     for(var i=0; i<client.data.length; i++) {
       if (client.data[i][field]) {
         var dt = new Date(client.data[i].date);
@@ -16,13 +18,14 @@ var client = {
 
   plotField: function (field) {
     if (field == 'systolic' || field == 'diastolic') {
-      var systolic = client.traceField('systolic');
-      var diastolic = client.traceField('diastolic');
+      var systolic = client.traceField('systolic', 'scatter');
+      var diastolic = client.traceField('diastolic', 'scatter');
       Plotly.newPlot('data-canvas', [systolic, diastolic]);
       $('#data-label').html('Blood Pressure');
     }
     else {
-      var trace = client.traceField(field);
+      var type = client.scatterFields.includes(field) ? 'scatter' : 'bar';
+      var trace = client.traceField(field, type);
       Plotly.newPlot('data-canvas', [trace]);
       $('#data-label').html(field);
     }
@@ -34,8 +37,13 @@ var client = {
     var headers = $('<tr></tr>');
     for (var i = 0; i < client.dataFields.length; i++) {
       var field = client.dataFields[i];
-      headers.append('<th><a href="#" onclick="client.plotField(\''+field+'\')">' +
+      if (field == 'date') {
+        headers.append('<th style="background-color:#eee;">Date</th>');
+      }
+      else {
+        headers.append('<th><a href="#" onclick="client.plotField(\''+field+'\')">' +
         field + '</a></th>');
+      }
     };
 
     $('#data-table').html(headers);
@@ -48,7 +56,7 @@ var client = {
 
         if (client.data[i].id == id) {
           // this is the row selected for editing
-          var value = field == "date" ? new Date(cell).toLocaleDateString('en-US') : cell;
+          var value = field == 'date' ? new Date(cell).toLocaleDateString('en-US') : cell;
           cell = '<input type="text" value="'+value+'" name="'+field+'" /></td>';
         }
         else if (field== "date") {
@@ -78,8 +86,6 @@ var client = {
       }
       row += '</tr>';
       dataTable.append(row);
-
-      //@todo - fix this if there's a second form
       $('#data-form input[type="submit"]').attr('value','New Entry');
       $('#data-form').submit(function() {
         if ($('#new-entry').is(':hidden')) {
