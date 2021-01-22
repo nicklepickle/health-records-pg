@@ -8,11 +8,13 @@ body, input {
 h1 {
   font-family: 'Neucha', sans-serif;
   margin-bottom:10px;
+  font-weight: normal;
 }
 
 h2 {
   font-size: 16px;
   font-weight:normal;
+  margin-top:4px;
 }
 
 a {
@@ -48,7 +50,6 @@ a:hover {
   float:left;
   font-family: 'Neucha', sans-serif;
   font-size:24px;
-  font-weight: bold;
   background-image: url('user.png');
   background-size: 50%;
   background-repeat: no-repeat;
@@ -92,7 +93,7 @@ a:hover {
   border: 1px solid #aaa;
   display: block;
   float:right;
-  margin-top:8px;
+  margin-top:10px;
   padding-bottom:2px;
   color: #aaa;
   text-decoration: none;
