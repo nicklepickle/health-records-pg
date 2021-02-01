@@ -23,6 +23,28 @@ var client = {
       Plotly.newPlot('data-canvas', [systolic, diastolic]);
       $('#data-label').html('Blood Pressure');
     }
+    else if (client.scatterFields.includes(field)) {
+      var trace = client.traceField(field, type);
+      var average = {
+        x:[], y:[],
+        type: 'scatter',
+        name: 'average',
+        mode:'lines',
+        line:{color:'#dde'}
+      };
+      var m = -1;
+      for(var i=0; i<client.data.length; i++) {
+        var dt = new Date(client.data[i].date);
+        if (dt.getMonth() != m) {
+          m = dt.getMonth();
+          var a = 0;
+          average.x.push(dt.getFullYear() + '-' + (m + 1) + '-1');
+          average.y.push(client.getMonthlyAverage(field, m, dt.getFullYear()));
+        }
+      }
+      Plotly.newPlot('data-canvas', [average, trace]);
+      $('#data-label').html('Weight');
+    }
     else {
       var type = client.scatterFields.includes(field) ? 'scatter' : 'bar';
       var trace = client.traceField(field, type);
@@ -103,6 +125,18 @@ var client = {
       $('#data-form input[type="submit"]').attr('value','Submit');
       $('form').submit(function() { return true; });
     }
+  },
+
+  getMonthlyAverage: function(field, m, y) {
+    var total = 0, count = 0;
+    for(var i=0; i<client.data.length; i++) {
+      var dt = new Date(client.data[i].date);
+      if (client.data[i][field] && dt.getFullYear() == y && dt.getMonth() == m) {
+        total += Number(client.data[i][field]);
+        count ++;
+      }
+    }
+    return total/count;
   },
 
   closeCanvas: function() {
