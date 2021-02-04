@@ -16,6 +16,31 @@ var client = {
     return trace;
   },
 
+  traceAverage: function(field, m, y) {
+    var average = {
+      x:[], y:[],
+      type: 'scatter',
+      name: 'average',
+      mode:'lines',
+      line:{color:'#dde'}
+    };
+
+    var m = -1, total = 0, count = 0, now = new Date();
+    for(var i=0; i<client.data.length; i++) {
+      total += Number(client.data[i][field]);
+      count ++;
+      var dt = new Date(client.data[i].date);
+      if (dt.getMonth() != m || dt.toDateString() == now.toDateString()) {
+        m = dt.getMonth();
+        average.x.push(dt.getFullYear() + '-' + (m + 1) + '-' + dt.getDate());
+        average.y.push(total/count);
+        count = total = 0;
+      }
+    }
+
+    return average;
+  },
+
   plotField: function (field) {
     if (field == 'systolic' || field == 'diastolic') {
       var systolic = client.traceField('systolic', 'scatter');
@@ -25,23 +50,7 @@ var client = {
     }
     else if (client.scatterFields.includes(field)) {
       var trace = client.traceField(field, type);
-      var average = {
-        x:[], y:[],
-        type: 'scatter',
-        name: 'average',
-        mode:'lines',
-        line:{color:'#dde'}
-      };
-      var m = -1;
-      for(var i=0; i<client.data.length; i++) {
-        var dt = new Date(client.data[i].date);
-        if (dt.getMonth() != m) {
-          m = dt.getMonth();
-          var a = 0;
-          average.x.push(dt.getFullYear() + '-' + (m + 1) + '-1');
-          average.y.push(client.getMonthlyAverage(field, m, dt.getFullYear()));
-        }
-      }
+      var average = client.traceAverage(field);
       Plotly.newPlot('data-canvas', [average, trace]);
       $('#data-label').html('Weight');
     }
@@ -127,21 +136,10 @@ var client = {
     }
   },
 
-  getMonthlyAverage: function(field, m, y) {
-    var total = 0, count = 0;
-    for(var i=0; i<client.data.length; i++) {
-      var dt = new Date(client.data[i].date);
-      if (client.data[i][field] && dt.getFullYear() == y && dt.getMonth() == m) {
-        total += Number(client.data[i][field]);
-        count ++;
-      }
-    }
-    return total/count;
-  },
-
   closeCanvas: function() {
     $('#canvas-container').hide(client.transition);
   },
+
   getCookieValue: function (a) {
     // https://stackoverflow.com/questions/5639346/
     var b = document.cookie.match('(^|;)\\s*' + a + '\\s*=\\s*([^;]+)');
