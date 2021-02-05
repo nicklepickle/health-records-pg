@@ -26,12 +26,19 @@ var client = {
       line:{color:'#dde'}
     };
 
-    var m = -1, total = 0, count = 0, now = new Date();
-    for(var i=0; i<client.data.length; i++) {
-      total += Number(client.data[i][field]);
+    var m = -1, total = 0, count = 0;
+    var data = client.data;
+    if (client.user.order == 'desc') {
+      data.sort(function(a,b) {
+        return new Date(b.date) < new Date(a.date);
+      });
+    }
+    var last = new Date(data[data.length-1].date);
+    for(var i=0; i<data.length; i++) {
+      total += Number(data[i][field]);
       count ++;
-      var dt = new Date(client.data[i].date);
-      if (dt.getMonth() != m || dt.toDateString() == now.toDateString()) {
+      var dt = new Date(data[i].date);
+      if (dt.getMonth() != m || dt.toDateString() == last.toDateString()) {
         m = dt.getMonth();
         average.x.push(dt.getFullYear() + '-' + (m + 1) + '-' + dt.getDate());
         average.y.push(total/count);
@@ -50,14 +57,13 @@ var client = {
       $('#data-label').html('Blood Pressure');
     }
     else if (client.scatterFields.includes(field)) {
-      var trace = client.traceField(field, type);
+      var trace = client.traceField(field, 'scatter');
       var average = client.traceAverage(field);
       Plotly.newPlot('data-canvas', [average, trace]);
       $('#data-label').html('Weight');
     }
     else {
-      var type = client.scatterFields.includes(field) ? 'scatter' : 'bar';
-      var trace = client.traceField(field, type);
+      var trace = client.traceField(field, 'bar');
       Plotly.newPlot('data-canvas', [trace]);
       $('#data-label').html(field);
     }
@@ -114,12 +120,7 @@ var client = {
         dataTable.append(newRow);
       }
     }
-    else {
-      $('#id').val(id);
-      $('#data-form input[name="date"]').focus();
-      $('#data-form input[type="submit"]').attr('value','Submit');
-      $('form').submit(function() { return true; });
-    }
+
     for(var i=0; i < client.data.length; i++) {
       var row ='<tr>';
       for(var ii = 0; ii < client.dataFields.length; ii++) {
@@ -144,6 +145,12 @@ var client = {
     }
     if (!id && client.user.order != 'desc') {
       dataTable.append(newRow);
+    }
+    else if (id) {
+      $('#id').val(id);
+      $('#data-form input[name="date"]').focus();
+      $('#data-form input[type="submit"]').attr('value','Submit');
+      $('form').submit(function() { return true; });
     }
 
   },
