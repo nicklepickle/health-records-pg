@@ -9,7 +9,12 @@
 <form method="post" action="/records" id="data-form">
   <input type="hidden" name="user" id="user" value="{{user.id}}" />
   <input type="hidden" name="id" id="id" value="0" />
+  {{#if desc}}
+    <div><input type="submit" value="Submit" /></div>
+  {{/if}}
   <table id="data-table"></table>
-  <div><input type="submit" value="Submit" /></div>
+  {{#unless desc}}
+    <div><input type="submit" value="Submit" /></div>
+  {{/unless}}
   <a href="/records/{{user.id}}?format=csv" class="side-link">Export</a>
 </form>

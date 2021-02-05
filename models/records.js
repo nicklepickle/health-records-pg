@@ -1,10 +1,13 @@
 const pool = require('./pool');
 
 let records = {
-  getRecords: async(user) =>  {
+  getRecords: async(user, order) =>  {
     const client = await pool.getClient();
     try {
-      const sql = 'select * from records where "user" = $1 order by date';
+      let sql = 'select * from records where "user" = $1 order by date';
+      if (order == 'desc') {
+        sql += ' desc';
+      }
       const res = await client.query(sql, [user]);
       //console.log('returned ' + res.rows.length + ' rows for user ' + user);
       return res.rows;

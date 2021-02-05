@@ -7,12 +7,19 @@ router.get('/', async(req, res, next) => {
   if (!req.cookies.user) {
     return res.redirect('/profile');
   }
-  let fields = req.cookies.user.fields.split(',');
+  let user = req.cookies.user;
+  let fields = user.fields.split(',');
   fields.unshift('date');
+  if (req.query.order && user.order != req.query.order) {
+    await users.setOrder(req.cookies.user.id, req.query.order);
+    user = await users.getUser(req.cookies.user.id);
+    res.cookie('user', user);
+  }
 
   return res.render('index', {
     scripts: ['records.js'],
-    user: req.cookies.user,
+    user: user,
+    desc: user.order == 'desc',
     fields: fields,
     title: 'Index'
   });
@@ -42,7 +49,6 @@ router.post('/profile', async(req, res, next) => {
     fields:fields.join()
   }
 
-  console.log('saving profile: ' + JSON.stringify(user));
   await users.setUser(params);
 
   // if the user is logged in - update the user cookie
@@ -66,8 +72,9 @@ router.get('/login/:id', async(req, res, next) => {
 });
 
 router.get('/records/:id', async(req, res, next) => {
+  var order = req.cookies.user.order || 'asc';
   if (!req.query.format || req.query.format == 'json') {
-    var rows = await records.getRecords(req.params.id);
+    var rows = await records.getRecords(req.params.id, order);
     return res.send(rows);
   }
   else if (req.query.format == 'csv') {

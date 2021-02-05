@@ -28,6 +28,21 @@ let users = {
       client.release();
     }
   },
+  setOrder: async(user, order) => {
+    const client = await pool.getClient();
+    try {
+      let sql = 'update users set "order" = $1 where "id" = $2';
+      let values = [order, user];
+      let res = await client.query(sql, values);
+      return res;
+    }
+    catch (error) {
+      console.error(error);
+    }
+    finally {
+      client.release();
+    }
+  },
   setUser: async(data) => {
     const client = await pool.getClient();
     try {

@@ -1,6 +1,7 @@
 var client = {
   data: [],
   dataFields: [],
+  user: null,
   // scatter works better for fields that can't be zero or you would be dead
   scatterFields: ['weight','pulse','basal temp','body temp'],
   traceField: function (field, type) {
@@ -69,7 +70,12 @@ var client = {
     for (var i = 0; i < client.dataFields.length; i++) {
       var field = client.dataFields[i];
       if (field == 'date') {
-        headers.append('<th style="background-color:#eee;">Date</th>');
+        if (client.user.order == 'desc') {
+          headers.append('<th class="date">Date <a href="?order=asc">&#9651</a></th>');
+        }
+        else {
+          headers.append('<th class="date">Date <a href="?order=desc">&#9661</a></th>');
+        }
       }
       else {
         headers.append('<th><a href="#" onclick="client.plotField(\''+field+'\')">' +
@@ -78,7 +84,42 @@ var client = {
     };
 
     $('#data-table').html(headers);
-
+    var newRow = '';
+    if (!id) {
+      // no id is selected for editing so allow new records
+      newRow ='<tr id="new-entry" style="display:none;">';
+      var last = client.data.length > 0 ? client.data[client.data.length - 1] : null;
+      for(var i = 0; i < client.dataFields.length; i++) {
+        var value = '';
+        if (client.dataFields[i] == 'date') {
+          value = new Date().toLocaleDateString('en-US');
+        }
+        else if (last && last[client.dataFields[i]]) {
+          value = last[client.dataFields[i]];
+        }
+        newRow +='<td><input type="text" value="'+value+'" name="'+client.dataFields[i]+'" /></td>';
+      }
+      newRow += '</tr>';
+      $('#data-form input[type="submit"]').attr('value','New Entry');
+      $('#data-form').submit(function() {
+        if ($('#new-entry').is(':hidden')) {
+          $('#new-entry').show();
+          $('#data-form input[name="date"]').focus();
+          $('#data-form input[type="submit"]').attr('value','Submit');
+          return false;
+        }
+        return true;
+      });
+      if (client.user.order == 'desc') {
+        dataTable.append(newRow);
+      }
+    }
+    else {
+      $('#id').val(id);
+      $('#data-form input[name="date"]').focus();
+      $('#data-form input[type="submit"]').attr('value','Submit');
+      $('form').submit(function() { return true; });
+    }
     for(var i=0; i < client.data.length; i++) {
       var row ='<tr>';
       for(var ii = 0; ii < client.dataFields.length; ii++) {
@@ -101,39 +142,10 @@ var client = {
       row += '</tr>';
       dataTable.append(row);
     }
-    if (!id) {
-      // no id is selected for editing so allow new records
-      var row ='<tr id="new-entry" style="display:none;">';
-      var last = client.data.length > 0 ? client.data[client.data.length - 1] : null;
-      for(var i = 0; i < client.dataFields.length; i++) {
-        var value = '';
-        if (client.dataFields[i] == 'date') {
-          value = new Date().toLocaleDateString('en-US');
-        }
-        else if (last && last[client.dataFields[i]]) {
-          value = last[client.dataFields[i]];
-        }
-        row +='<td><input type="text" value="'+value+'" name="'+client.dataFields[i]+'" /></td>';
-      }
-      row += '</tr>';
-      dataTable.append(row);
-      $('#data-form input[type="submit"]').attr('value','New Entry');
-      $('#data-form').submit(function() {
-        if ($('#new-entry').is(':hidden')) {
-          $('#new-entry').show();
-          $('#data-form input[name="date"]').focus();
-          $('#data-form input[type="submit"]').attr('value','Submit');
-          return false;
-        }
-        return true;
-      });
+    if (!id && client.user.order != 'desc') {
+      dataTable.append(newRow);
     }
-    else {
-      $('#id').val(id);
-      $('#data-form input[name="date"]').focus();
-      $('#data-form input[type="submit"]').attr('value','Submit');
-      $('form').submit(function() { return true; });
-    }
+
   },
 
   closeCanvas: function() {
@@ -150,13 +162,13 @@ var client = {
 
 $(document).ready(function() {
   var c = decodeURIComponent(client.getCookieValue('user'));
-  var user = $.parseJSON(c.substr(2)); // substr to remove "j:"
+  client.user = $.parseJSON(c.substr(2)); // substr to remove "j:"
   // console.log('user = ' + JSON.stringify(user));
-  client.dataFields = user.fields.split(',');
+  client.dataFields = client.user.fields.split(',');
   client.dataFields.unshift('date');
   $.ajax({
      dataType: 'json',
-     url: '/records/' + user.id,
+     url: '/records/' + client.user.id,
      success: function (response) {
         client.data = response;
         client.renderTable();

@@ -6,5 +6,6 @@ create table users (
   "height" real,
   "gender" char,
   "birthday" date,
-  "fields" varchar(255)
+  "fields" varchar(255),
+  "order" varchar(4)
 )
