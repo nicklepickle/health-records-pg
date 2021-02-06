@@ -5,6 +5,16 @@ body, input {
   color:#555;
 }
 
+a {
+  color:#06b;
+  text-decoration:none;
+}
+
+a:hover {
+  color:#38f;
+  text-decoration:underline;
+}
+
 h1 {
   font-family: 'Neucha', sans-serif;
   margin-bottom:10px;
@@ -15,16 +25,6 @@ h2 {
   font-size: 16px;
   font-weight:normal;
   margin-top:4px;
-}
-
-a {
-  color:#06b;
-  text-decoration:none;
-}
-
-a:hover {
-  color:#38f;
-  text-decoration:underline;
 }
 
 .date {
@@ -71,26 +71,8 @@ a:hover {
   margin-top:-28px;
 }
 
-#content {
-  width:800px;
-  margin-left:60px;
-}
-
-#data-label {
-  text-transform:capitalize;
-  width:700px;
-  float:left;
-}
-
-#canvas-container {
+#cancel, #canvas-container {
   display:none;
-}
-
-#data-canvas {
-  margin-left:-60px;
-  width:864px;
-  height:300px;
-  clear:left;
 }
 
 #close-canvas {
@@ -110,6 +92,29 @@ a:hover {
 #close-canvas:hover {
   background-color: #aaa;
   color: #fff;
+}
+
+#content {
+  width:800px;
+  margin-left:60px;
+}
+
+#data-canvas {
+  margin-left:-60px;
+  width:864px;
+  height:300px;
+  clear:left;
+}
+
+#data-form div {
+  margin-top:14px;
+  height:28px;
+}
+
+#data-label {
+  text-transform:capitalize;
+  width:700px;
+  float:left;
 }
 
 #data-table {
@@ -135,11 +140,6 @@ a:hover {
   padding:0;
   border-width:0;
   width: 100%;
-}
-
-#data-form div {
-  margin-top:14px;
-  height:28px;
 }
 
 #edit-profile {

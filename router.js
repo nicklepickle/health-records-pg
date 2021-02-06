@@ -21,7 +21,7 @@ router.get('/', async(req, res, next) => {
     user: user,
     desc: user.order == 'desc',
     fields: fields,
-    title: 'Index'
+    title: user.username
   });
 });
 
@@ -30,7 +30,7 @@ router.get('/profile', async(req, res, next) => {
     scripts: ['profile.js'],
     fields: await records.getFields(),
     users: await users.getUsers(),
-    title: 'Select a profile'
+    title: 'Select Profile'
   });
 });
 

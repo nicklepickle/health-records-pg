@@ -114,6 +114,7 @@ var client = {
       $('#data-form').submit(function() {
         if ($('#new-entry').is(':hidden')) {
           $('#new-entry').show();
+          $('#cancel').show();
           $('#data-form input[name="date"]').focus();
           $('#data-form input[type="submit"]').attr('value','Submit');
           return false;
@@ -134,10 +135,14 @@ var client = {
         dataTable.append(client.renderRow(client.data[i], id));
       }
     }
-    if (!id && client.user.order != 'desc') {
-      dataTable.append(newRow);
+    if (!id) {
+      $('#cancel').hide();
+      if (client.user.order != 'desc') {
+        dataTable.append(newRow);
+      }
     }
     else if (id) {
+      $('#cancel').show();
       $('#id').val(id);
       $('#data-form input[name="date"]').focus();
       $('#data-form input[type="submit"]').attr('value','Submit');
@@ -196,7 +201,7 @@ $(document).ready(function() {
      url: '/records/' + client.user.id,
      success: function (response) {
         client.data = response;
-        client.renderTable();
+        client.renderTable(0);
      },
      error: function (response) {
         console.error(response);
