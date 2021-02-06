@@ -28,17 +28,13 @@ var client = {
 
     var m = -1, total = 0, count = 0;
     var data = client.data;
-    if (client.user.order == 'desc') {
-      data.sort(function(a,b) {
-        return new Date(b.date) < new Date(a.date);
-      });
-    }
-    var last = new Date(data[data.length-1].date);
+    var last = client.lastRecord();
+    var lastdt = last ? new Date(last.date) : new Date();
     for(var i=0; i<data.length; i++) {
       total += Number(data[i][field]);
       count ++;
       var dt = new Date(data[i].date);
-      if (dt.getMonth() != m || dt.toDateString() == last.toDateString()) {
+      if (dt.getMonth() != m || dt.toDateString() == lastdt.toDateString()) {
         m = dt.getMonth();
         average.x.push(dt.getFullYear() + '-' + (m + 1) + '-' + dt.getDate());
         average.y.push(total/count);
@@ -89,12 +85,20 @@ var client = {
       }
     };
 
+    /*
+    if (client.user.order == 'desc') {
+      data.sort(function(a,b) {
+        return new Date(b.date) < new Date(a.date);
+      });
+    }
+    */
+
     $('#data-table').html(headers);
     var newRow = '';
     if (!id) {
       // no id is selected for editing so allow new records
       newRow ='<tr id="new-entry" style="display:none;">';
-      var last = client.data.length > 0 ? client.data[client.data.length - 1] : null;
+      var last = client.lastRecord();
       for(var i = 0; i < client.dataFields.length; i++) {
         var value = '';
         if (client.dataFields[i] == 'date') {
@@ -120,28 +124,15 @@ var client = {
         dataTable.append(newRow);
       }
     }
-
-    for(var i=0; i < client.data.length; i++) {
-      var row ='<tr>';
-      for(var ii = 0; ii < client.dataFields.length; ii++) {
-        var field = client.dataFields[ii];
-        var cell = client.data[i][field] == null ? '' : client.data[i][field];
-
-        if (client.data[i].id == id) {
-          // this is the row selected for editing
-          var value = field == 'date' ? new Date(cell).toLocaleDateString('en-US') : cell;
-          cell = '<input type="text" value="'+value+'" name="'+field+'" /></td>';
-        }
-        else if (field== "date") {
-          var dt = new Date(cell);
-          cell = '<a href="javascript:client.renderTable('+client.data[i]['id']+')">' +
-            dt.toLocaleDateString('en-US') + '</a>';
-        }
-        row +='<td>'+cell+'</td>';
-
+    if (client.user.order == 'desc') {
+      for(var i=client.data.length-1; i >= 0; i--) {
+        dataTable.append(client.renderRow(client.data[i], id));
       }
-      row += '</tr>';
-      dataTable.append(row);
+    }
+    else {
+      for(var i=0; i < client.data.length; i++) {
+        dataTable.append(client.renderRow(client.data[i], id));
+      }
     }
     if (!id && client.user.order != 'desc') {
       dataTable.append(newRow);
@@ -155,8 +146,35 @@ var client = {
 
   },
 
+  renderRow: function(record, id) {
+    var row ='<tr>';
+    for(var i = 0; i < client.dataFields.length; i++) {
+      var field = client.dataFields[i];
+      var cell = record[field] == null ? '' : record[field];
+
+      if (record.id == id) {
+        // this is the row selected for editing
+        var value = field == 'date' ? new Date(cell).toLocaleDateString('en-US') : cell;
+        cell = '<input type="text" value="'+value+'" name="'+field+'" /></td>';
+      }
+      else if (field== "date") {
+        var dt = new Date(cell);
+        cell = '<a href="javascript:client.renderTable('+record.id+')">' +
+          dt.toLocaleDateString('en-US') + '</a>';
+      }
+      row +='<td>'+cell+'</td>';
+
+    }
+    row += '</tr>';
+    return row;
+  },
+
   closeCanvas: function() {
     $('#canvas-container').hide(client.transition);
+  },
+
+  lastRecord: function() {
+    return client.data.length > 0 ? client.data[client.data.length - 1] : null;
   },
 
   getCookieValue: function (a) {

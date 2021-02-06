@@ -72,9 +72,8 @@ router.get('/login/:id', async(req, res, next) => {
 });
 
 router.get('/records/:id', async(req, res, next) => {
-  var order = req.cookies.user.order || 'asc';
   if (!req.query.format || req.query.format == 'json') {
-    var rows = await records.getRecords(req.params.id, order);
+    var rows = await records.getRecords(req.params.id);
     return res.send(rows);
   }
   else if (req.query.format == 'csv') {
