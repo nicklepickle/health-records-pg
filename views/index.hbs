@@ -1,6 +1,9 @@
 
 <h1><a href="/">{{user.username}}</a></h1>
-<a href="/profile" class="side-link">Change Profile</a>
+<div class="side-nav">
+  <a href="/profile" class="side-link">Change Profile</a>
+  <a href="/records/{{user.id}}?format=csv" class="side-link">Export</a>
+</div>
 <div id="canvas-container">
   <h2 id="data-label"></h2>
   <a href="javascript:client.closeCanvas()" id="close-canvas">&times;</a>

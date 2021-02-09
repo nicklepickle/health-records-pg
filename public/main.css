@@ -19,6 +19,8 @@ h1 {
   font-family: 'Neucha', sans-serif;
   margin-bottom:10px;
   font-weight: normal;
+  width:50%;
+  float:left;
 }
 
 h2 {
@@ -63,12 +65,16 @@ h2 {
   background-repeat: no-repeat;
   background-position: center;
 }
-
-.side-link {
+.side-nav {
+  width:49.5%;
+  float:left;
+  text-align: right;
+  padding-top: 24px;
+}
+.side-nav a {
   color:#999;
   font-size:11px;
-  float:right;
-  margin-top:-28px;
+  margin-left: 20px;
 }
 
 #cancel, #canvas-container {
@@ -109,6 +115,7 @@ h2 {
 #data-form div {
   margin-top:14px;
   height:28px;
+  clear:both;
 }
 
 #data-label {

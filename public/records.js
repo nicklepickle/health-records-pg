@@ -56,7 +56,7 @@ var client = {
       var trace = client.traceField(field, 'scatter');
       var average = client.traceAverage(field);
       Plotly.newPlot('data-canvas', [average, trace]);
-      $('#data-label').html('Weight');
+      $('#data-label').html(field);
     }
     else {
       var trace = client.traceField(field, 'bar');
