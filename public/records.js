@@ -5,7 +5,15 @@ var client = {
   // scatter works better for fields that can't be zero or you would be dead
   scatterFields: ['weight','pulse','basal temp','body temp'],
   traceField: function (field, type) {
-    var trace = {x:[], y:[], type: type, name: field};
+    var trace = {
+      x:[],
+      y:[],
+      type: type,
+      name: field
+    };
+    if (type == 'scatter') {
+      trace.mode = 'lines';
+    }
     for(var i=0; i<client.data.length; i++) {
       if (client.data[i][field]) {
         var dt = new Date(client.data[i].date);
@@ -22,8 +30,8 @@ var client = {
       x:[], y:[],
       type: 'scatter',
       name: 'average',
-      mode:'lines',
-      line:{color:'#dde'}
+      mode:'lines'
+      //line:{color:'#dde'}
     };
 
     var m = -1, total = 0, count = 0;
@@ -73,10 +81,10 @@ var client = {
       var field = client.dataFields[i];
       if (field == 'date') {
         if (client.user.order == 'desc') {
-          headers.append('<th class="date">Date <a href="?order=asc">&#9651</a></th>');
+          headers.append('<th class="date">Date <a href="?order=asc">&#9651;</a></th>');
         }
         else {
-          headers.append('<th class="date">Date <a href="?order=desc">&#9661</a></th>');
+          headers.append('<th class="date">Date <a href="?order=desc">&#9661;</a></th>');
         }
       }
       else {
