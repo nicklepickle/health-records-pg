@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Neucha&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dosis&display=swap');
 
 body, input {
   font: 13px "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -16,7 +16,8 @@ a:hover {
 }
 
 h1 {
-  font-family: 'Neucha', sans-serif;
+  font-family: 'Dosis', sans-serif;
+  font-size:24px;
   margin-bottom:10px;
   font-weight: normal;
   width:50%;
@@ -58,7 +59,7 @@ h2 {
   border:2px solid #ccc;
   vertical-align: middle;
   float:left;
-  font-family: 'Neucha', sans-serif;
+  font-family: 'Dosis', sans-serif;
   font-size:24px;
   background-image: url('user.png');
   background-size: 50%;
