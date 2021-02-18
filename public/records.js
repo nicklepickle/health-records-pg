@@ -3,7 +3,7 @@ var client = {
   dataFields: [],
   user: null,
   // scatter works better for fields that can't be zero or you would be dead
-  scatterFields: ['weight','pulse','basal temp','body temp'],
+  scatterFields: ['weight','pulse','basal temp'],
   traceField: function (field, type) {
     var trace = {
       x:[],
@@ -31,7 +31,6 @@ var client = {
       type: 'scatter',
       name: 'average',
       mode:'lines'
-      //line:{color:'#dde'}
     };
 
     var m = -1, total = 0, count = 0;
@@ -39,14 +38,24 @@ var client = {
     var last = client.lastRecord();
     var lastdt = last ? new Date(last.date) : new Date();
     for(var i=0; i<data.length; i++) {
-      total += Number(data[i][field]);
-      count ++;
+      if (data[i][field] == null) {
+        continue;
+      }
+
       var dt = new Date(data[i].date);
-      if (dt.getMonth() != m || dt.toDateString() == lastdt.toDateString()) {
+      if (dt.getMonth() != m ) {
         m = dt.getMonth();
         average.x.push(dt.getFullYear() + '-' + (m + 1) + '-' + dt.getDate());
-        average.y.push(total/count);
+        average.y.push(count == 0  ? data[i][field] : total/count);
         count = total = 0;
+      }
+
+      total += Number(data[i][field]);
+      count ++;
+
+      if (dt.toDateString() == lastdt.toDateString()) {
+        average.x.push(dt.getFullYear() + '-' + (m + 1) + '-' + dt.getDate());
+        average.y.push(total/count);
       }
     }
 
@@ -68,7 +77,8 @@ var client = {
     }
     else {
       var trace = client.traceField(field, 'bar');
-      Plotly.newPlot('data-canvas', [trace]);
+      var average = client.traceAverage(field);
+      Plotly.newPlot('data-canvas', [trace, average]);
       $('#data-label').html(field);
     }
     $('#canvas-container').show();
