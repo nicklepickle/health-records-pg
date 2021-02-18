@@ -2,23 +2,28 @@ const pool = require('./pool');
 
 let records = {
   getRecords: async(user) =>  {
-    const client = await pool.getClient();
+    let client = null;
     try {
+      client = await pool.getClient();
       let sql = 'select * from records where "user" = $1 order by date';
       const res = await client.query(sql, [user]);
       //console.log('returned ' + res.rows.length + ' rows for user ' + user);
       return res.rows;
     }
     catch (error) {
-      console.error(error);
+      console.error('Error selecting records for user ' + user);
+      throw(error);
     }
     finally {
-      client.release();
+      if (client) {
+        client.release();
+      }
     }
   },
   setRecord: async(fields, data) => {
-    const client = await pool.getClient();
+    let client = null;
     try {
+      client = await pool.getClient();
       values = [];
       for(var i = 0; i < fields.length; i++) {
         let value = 'null';
@@ -57,15 +62,19 @@ let records = {
       return res;
     }
     catch (error) {
-      console.error(error);
+      console.error('Error modifying record')
+      throw(error);
     }
     finally {
-      client.release();
+      if (client) {
+        client.release();
+      }
     }
   },
   getFields: async() => {
-    const client = await pool.getClient();
+    let client = null;
     try {
+      client = await pool.getClient();
       sql = "select column_name from information_schema.columns " +
         "where table_name = 'records' and column_name not in ('date','id','modified','user')";
       const res = await client.query(sql);
@@ -76,10 +85,13 @@ let records = {
       return fields;
     }
     catch (error) {
-      console.error(error);
+      console.error('Error selecting fields');
+      throw(error);
     }
     finally {
-      client.release();
+      if (client) {
+        client.release();
+      }
     }
   },
   getCsv: async(user, fields) => {
@@ -102,7 +114,8 @@ let records = {
       return csv;
     }
     catch (error) {
-      console.error(error);
+      console.error('Error generating records csv for user ' + user);
+      throw(error);
     }
   }
 }

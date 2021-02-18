@@ -1,51 +1,58 @@
 const pool = require('./pool');
 let users = {
   getUsers: async() =>  {
-    const client = await pool.getClient();
+    let client = null;
     try {
+      client = await pool.getClient();
       const sql = 'select * from users order by username';
       const res = await client.query(sql);
       return res.rows;
     }
     catch (error) {
-      console.error(error);
+      console.error('Error selecting users');
+      throw(error);
     }
     finally {
       client.release();
     }
   },
   getUser: async(id) =>  {
-    const client = await pool.getClient();
+    let client = null;
     try {
+      client = await pool.getClient();
       const sql = 'select * from users where id = $1';
       const res = await client.query(sql, [id]);
       return res.rows.length == 0 ? null : res.rows[0];
     }
     catch (error) {
-      console.error(error);
+      console.error('Error selecting user');
+      throw(error);
     }
     finally {
       client.release();
     }
   },
   setOrder: async(user, order) => {
-    const client = await pool.getClient();
+    let client = null;
     try {
+      client = await pool.getClient();
       let sql = 'update users set "order" = $1 where "id" = $2';
       let values = [order, user];
       let res = await client.query(sql, values);
       return res;
     }
     catch (error) {
-      console.error(error);
+      console.error('Error updating user order');
+      throw(error);
     }
     finally {
       client.release();
     }
   },
   setUser: async(data) => {
-    const client = await pool.getClient();
+    let client = null;
     try {
+      client = await pool.getClient();
       var existing = users.getUsers();
       for(var i=0; i<existing.length; i++) {
         if (existing[i].username == data.username && existing[i].id != data.id) {
@@ -66,7 +73,8 @@ let users = {
       }
     }
     catch (error) {
-      console.error(error);
+      console.error('Error modifying user');
+      throw(error);
     }
     finally {
       client.release();

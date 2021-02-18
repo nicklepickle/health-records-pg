@@ -4,97 +4,139 @@ const records = require('./models/records');
 const users = require('./models/users');
 
 router.get('/', async(req, res, next) => {
-  if (!req.cookies.user) {
-    return res.redirect('/profile');
-  }
-  let user = req.cookies.user;
-  let fields = user.fields.split(',');
-  fields.unshift('date');
-  if (req.query.order && user.order != req.query.order) {
-    await users.setOrder(req.cookies.user.id, req.query.order);
-    user = await users.getUser(req.cookies.user.id);
-    res.cookie('user', user);
-  }
+  try {
+    if (!req.cookies.user) {
+      return res.redirect('/profile');
+    }
+    let user = req.cookies.user;
+    let fields = user.fields.split(',');
+    fields.unshift('date');
+    if (req.query.order && user.order != req.query.order) {
+      await users.setOrder(req.cookies.user.id, req.query.order);
+      user = await users.getUser(req.cookies.user.id);
+      res.cookie('user', user);
+    }
 
-  return res.render('index', {
-    scripts: ['records.js'],
-    user: user,
-    desc: user.order == 'desc',
-    fields: fields,
-    title: user.username
-  });
+    return res.render('index', {
+      scripts: ['records.js'],
+      user: user,
+      desc: user.order == 'desc',
+      fields: fields,
+      title: user.username
+    });
+  }
+  catch(error) {
+    console.error(error);
+    return res.send(error);
+  }
 });
 
 router.get('/profile', async(req, res, next) => {
-  return res.render('profile', {
-    scripts: ['profile.js'],
-    fields: await records.getFields(),
-    users: await users.getUsers(),
-    title: 'Select Profile'
-  });
+  try {
+    return res.render('profile', {
+      scripts: ['profile.js'],
+      fields: await records.getFields(),
+      users: await users.getUsers(),
+      title: 'Select Profile'
+    });
+  }
+  catch(error) {
+    console.error(error);
+    return res.send(error);
+  }
 });
 
 router.post('/profile', async(req, res, next) => {
-  let fields = [];
-  let keys = Object.keys(req.body);
-  for(var i=0; i<keys.length; i++) {
-    if (keys[i].indexOf('field-') != -1) {
-      fields.push(keys[i].replace('field-',''));
+  try {
+    let fields = [];
+    let keys = Object.keys(req.body);
+    for(var i=0; i<keys.length; i++) {
+      if (keys[i].indexOf('field-') != -1) {
+        fields.push(keys[i].replace('field-',''));
+      }
     }
+
+    let params = {
+      id:req.body.id,
+      username:req.body.username,
+      fields:fields.join()
+    }
+
+    await users.setUser(params);
+
+    // if the user is logged in - update the user cookie
+    if (req.cookies.user && req.cookies.user.id == params.id) {
+      var user = await users.getUser(req.params.id);
+      res.cookie('user', user);
+    }
+
+    return res.redirect('/profile');
   }
-
-  let params = {
-    id:req.body.id,
-    username:req.body.username,
-    fields:fields.join()
+  catch(error) {
+    console.error(error);
+    return res.send(error);
   }
-
-  await users.setUser(params);
-
-  // if the user is logged in - update the user cookie
-  if (req.cookies.user && req.cookies.user.id == params.id) {
-    var user = await users.getUser(req.params.id);
-    res.cookie('user', user);
-  }
-
-  return res.redirect('/profile');
 });
 
 router.get('/user/:id', async(req, res, next) => {
-  var user = await users.getUser(req.params.id);
-  return res.send(user);
+  try {
+    var user = await users.getUser(req.params.id);
+    return res.send(user);
+  }
+  catch(error) {
+    console.error(error);
+    return res.send(error);
+  }
 });
 
 router.get('/login/:id', async(req, res, next) => {
-  var user = await users.getUser(req.params.id);
-  res.cookie('user', user);
-  return res.redirect('/');
+  try {
+    var user = await users.getUser(req.params.id);
+    res.cookie('user', user);
+    return res.redirect('/');
+  }
+  catch(error) {
+    console.error(error);
+    return res.send(error);
+  }
 });
 
 router.get('/records/:id', async(req, res, next) => {
-  if (!req.query.format || req.query.format == 'json') {
-    var rows = await records.getRecords(req.params.id);
-    return res.send(rows);
+  try {
+    if (!req.query.format || req.query.format == 'json') {
+      var rows = await records.getRecords(req.params.id);
+      return res.send(rows);
+    }
+    else if (req.query.format == 'csv') {
+      var user = await users.getUser(req.params.id);
+      var fields = user.fields.split(',');
+      var csv = await records.getCsv(user.id, fields);
+      res.set('Content-Type', 'application/octet-stream');
+      res.attachment('health-records.csv');
+      return res.send(Buffer.from(csv));
+    }
   }
-  else if (req.query.format == 'csv') {
-    var user = await users.getUser(req.params.id);
-    var fields = user.fields.split(',');
-    var csv = await records.getCsv(user.id, fields);
-    res.set('Content-Type', 'application/octet-stream');
-    res.attachment('health-records.csv');
-    return res.send(Buffer.from(csv));
+  catch(error) {
+    console.error(error);
+    return res.send(error);
   }
 });
 
 router.post('/records', async(req, res, next) => {
-  if (!req.cookies.user) {
-    return res.redirect('/profile');
-  }
-  let fields = req.cookies.user.fields.split(',');
-  fields.unshift('date','user');
+  try {
+    if (!req.cookies.user) {
+      return res.redirect('/profile');
+    }
+    let fields = req.cookies.user.fields.split(',');
+    fields.unshift('date','user');
 
-  await records.setRecord(fields, req.body);
-  return res.redirect('/');
+    await records.setRecord(fields, req.body);
+    return res.redirect('/');
+  }
+  catch(error) {
+    console.error(error);
+    return res.send(error);
+  }
 });
 
 module.exports = router;

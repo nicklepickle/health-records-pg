@@ -14,8 +14,9 @@ const pool = {
       const client = await pool.pool.connect();
       return client;
     }
-    catch(ex) {
-      console.error(ex);
+    catch(error) {
+      console.error('Error connecting to postgres at ' + config.database.host);
+      throw(error);
     }
   }
 }
