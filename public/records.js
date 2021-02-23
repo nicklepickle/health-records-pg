@@ -30,12 +30,12 @@ var client = {
       x:[], y:[],
       type: 'scatter',
       name: 'average',
-      mode:'lines'
+      mode: 'lines+markers'
     };
 
     var m = -1, total = 0, count = 0;
     var data = client.data;
-    var last = client.lastRecord();
+    var last = client.lastRecordWithField(field);
     var lastdt = last ? new Date(last.date) : new Date();
     for(var i=0; i<data.length; i++) {
       if (data[i][field] == null) {
@@ -198,6 +198,15 @@ var client = {
 
   lastRecord: function() {
     return client.data.length > 0 ? client.data[client.data.length - 1] : null;
+  },
+
+  lastRecordWithField: function(field) {
+    for(var i = client.data.length-1; i >= 0; i--) {
+      if (client.data[i][field] != null) {
+        return client.data[i];
+      }
+    }
+    return null;
   },
 
   getCookieValue: function (a) {
