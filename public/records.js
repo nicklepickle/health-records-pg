@@ -116,8 +116,8 @@ var client = {
     if (!id) {
       // no id is selected for editing so allow new records
       newRow ='<tr id="new-entry" style="display:none;">';
-      var last = client.lastRecord();
       for(var i = 0; i < client.dataFields.length; i++) {
+        var last = client.lastRecordWithField(client.dataFields[i]);
         var value = '';
         if (client.dataFields[i] == 'date') {
           value = new Date().toLocaleDateString('en-US');
@@ -131,10 +131,12 @@ var client = {
       $('#data-form input[type="submit"]').attr('value','New Entry');
       $('#data-form').submit(function() {
         if ($('#new-entry').is(':hidden')) {
-          $('#new-entry').show();
-          $('#cancel').show();
+          var today = new Date().toLocaleDateString('en-US');
+          $('#data-form input[name="date"]').val(today);
           $('#data-form input[name="date"]').focus();
           $('#data-form input[type="submit"]').attr('value','Submit');
+          $('#new-entry').show();
+          $('#cancel').show();
           return false;
         }
         return true;
