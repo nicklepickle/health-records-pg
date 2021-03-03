@@ -133,10 +133,10 @@ var client = {
         if ($('#new-entry').is(':hidden')) {
           var today = new Date().toLocaleDateString('en-US');
           $('#data-form input[name="date"]').val(today);
-          $('#data-form input[name="date"]').focus();
           $('#data-form input[type="submit"]').attr('value','Submit');
           $('#new-entry').show();
           $('#cancel').show();
+          $('#data-form input[name="date"]').focus();
           return false;
         }
         return true;
@@ -192,14 +192,6 @@ var client = {
     }
     row += '</tr>';
     return row;
-  },
-
-  closeCanvas: function() {
-    $('#canvas-container').hide(client.transition);
-  },
-
-  lastRecord: function() {
-    return client.data.length > 0 ? client.data[client.data.length - 1] : null;
   },
 
   lastRecordWithField: function(field) {
