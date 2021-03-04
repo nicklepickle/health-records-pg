@@ -15,11 +15,15 @@ var client = {
       trace.mode = 'lines';
     }
     for(var i=0; i<client.data.length; i++) {
+      var dt = new Date(client.data[i].date);
       if (client.data[i][field]) {
-        var dt = new Date(client.data[i].date);
         //trace.x.push(dt.toLocaleDateString('en-US'));
         trace.x.push(dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate());
         trace.y.push(client.data[i][field]);
+      }
+      else if (field == 'BMI' && client.data[i].weight) {
+        trace.x.push(dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate());
+        trace.y.push(client.getBMI(client.user.height, client.data[i].weight));
       }
     }
     return trace;
@@ -62,12 +66,37 @@ var client = {
     return average;
   },
 
+  traceStatic: function(field, value, source, color) {
+    var start = source.x[0];
+    var end = source.x[source.x.length - 1];
+    var trace = {
+      x:[start, end],
+      y:[value, value],
+      type: 'scatter',
+      mode: 'lines',
+      name: field,
+      line: {
+        color: color,
+        dash: 'dot'
+      }
+    };
+    return trace;
+
+  },
+
   plotField: function (field) {
     if (field == 'systolic' || field == 'diastolic') {
       var systolic = client.traceField('systolic', 'scatter');
       var diastolic = client.traceField('diastolic', 'scatter');
       Plotly.newPlot('data-canvas', [systolic, diastolic]);
       $('#data-label').html('Blood Pressure');
+    }
+    else if (field == 'BMI') {
+      var trace = client.traceField('BMI', 'scatter');
+      var ideal = client.traceStatic('ideal', 25, trace, '#0A0');
+      var obese = client.traceStatic('obese', 30, trace, '#A00');
+      Plotly.newPlot('data-canvas', [trace, obese, ideal]);
+      $('#data-label').html(field);
     }
     else if (client.scatterFields.includes(field)) {
       var trace = client.traceField(field, 'scatter');
@@ -96,6 +125,10 @@ var client = {
         else {
           headers.append('<th class="date">Date <a href="?order=desc">&#9661;</a></th>');
         }
+      }
+      else if (field == 'weight' && client.user.height > 0) {
+        headers.append('<th><a href="#" onclick="client.plotField(\'weight\')">Weight</a></th>'+
+                      '<th><a href="#" onclick="client.plotField(\'BMI\')">BMI</a></th>');
       }
       else {
         headers.append('<th><a href="#" onclick="client.plotField(\''+field+'\')">' +
@@ -126,6 +159,10 @@ var client = {
           value = last[client.dataFields[i]];
         }
         newRow +='<td><input type="text" value="'+value+'" name="'+client.dataFields[i]+'" /></td>';
+
+        if (client.dataFields[i]  == 'weight' && client.user.height > 0) {
+          newRow +='<td></td>';
+        }
       }
       newRow += '</tr>';
       $('#data-form input[type="submit"]').attr('value','New Entry');
@@ -182,13 +219,16 @@ var client = {
         var value = field == 'date' ? new Date(cell).toLocaleDateString('en-US') : cell;
         cell = '<input type="text" value="'+value+'" name="'+field+'" /></td>';
       }
-      else if (field== "date") {
+      else if (field== 'date') {
         var dt = new Date(cell);
         cell = '<a href="javascript:client.renderTable('+record.id+')">' +
           dt.toLocaleDateString('en-US') + '</a>';
       }
       row +='<td>'+cell+'</td>';
-
+      if (field == 'weight' && client.user.height > 0) {
+        var bmi = client.getBMI(client.user.height, record.weight);
+        row +='<td>'+bmi+'</td>';
+      }
     }
     row += '</tr>';
     return row;
@@ -201,6 +241,16 @@ var client = {
       }
     }
     return null;
+  },
+
+  getBMI: function(height, weight) {
+    var bmi = '';
+    if (height && weight) {
+      var kg = new Number(weight) / 2.205
+      var cm = new Number(height) * 100;
+      bmi = (kg / cm / cm * 10000).toFixed(2);
+    }
+    return bmi;
   },
 
   getCookieValue: function (a) {

@@ -1,7 +1,7 @@
 var client = {
   m2in: function() {
     var m = new Number($('#height').val());
-    if (!isNaN(m)) {
+    if (m > 0) {
       var i = Math.floor((m * 39.3701) % 12);
       var f = Math.floor((m * 39.3701) / 12);
       $('#inches').val(i);
@@ -11,10 +11,10 @@ var client = {
   in2m: function() {
     var i = new Number($('#inches').val());
     var f = new Number($('#feet').val());
-    if (!isNaN(i) && !isNaN(f)) {
+    if (i > 0 && f > 0) {
       $('#height').val((i + f * 12) * .0254);
     }
-    else if (!isNaN(f)) {
+    else if (f > 0) {
       $('#height').val(f * 12 * .0254);
     }
   },
