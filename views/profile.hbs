@@ -14,8 +14,24 @@
 <div id="edit-profile">
 <form action="/profile" method="post">
   <input type="hidden" name="id" id="id" />
-  <label for="username" class="label">Name</label><br />
-  <input type="text" name="username" id="username" />
+  <div>
+    <label for="username" class="label">Name</label><br />
+    <input type="text" name="username" id="username" />
+  </div>
+  <br />
+  <div class="label">Height</div>
+  <div class="input-group">
+    <label for="feet">feet</label>
+    <input type="text" name="feet" id="feet" class="tiny" onkeyup="client.in2m();" />
+  </div>
+  <div class="input-group">
+    <label for="inches">inches</label>
+    <input type="text" name="inches" id="inches" class="tiny"  onkeyup="client.in2m();" />
+  </div>
+  <div class="input-group">
+    <label for="height">meters</label>
+    <input type="text" name="height" id="height" class="tiny"  onkeyup="client.m2in();" />
+  </div>
   <div class="label">Statistics</div>
   {{#each fields}}
   <div class="field-select">

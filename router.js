@@ -59,6 +59,7 @@ router.post('/profile', async(req, res, next) => {
     let params = {
       id:req.body.id,
       username:req.body.username,
+      height:req.body.height,
       fields:fields.join()
     }
 
