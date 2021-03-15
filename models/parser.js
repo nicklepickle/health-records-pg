@@ -23,7 +23,7 @@ module.exports = {
             return;
          }
          fs.writeFile(cssPath, output.css, function() {
-           console.log('Rendered ' + cssPath);
+           console.log('Rendered ' + library + '.less');
          });
       });
     });

@@ -86,26 +86,26 @@ var client = {
 
   plotField: function (field) {
     var layout = {
-      plot_bgcolor:"black",
-      paper_bgcolor:"transparent"
+      plot_bgcolor: client.user.theme == 'dark' ? 'black' : 'white',
+      paper_bgcolor: 'transparent'
     }
     if (field == 'systolic' || field == 'diastolic') {
       var systolic = client.traceField('systolic', 'scatter');
       var diastolic = client.traceField('diastolic', 'scatter');
-      Plotly.newPlot('data-canvas', [systolic, diastolic]);
+      Plotly.newPlot('data-canvas', [systolic, diastolic], layout);
       $('#data-label').html('Blood Pressure');
     }
     else if (field == 'BMI') {
       var trace = client.traceField('BMI', 'scatter');
       var ideal = client.traceStatic('ideal', 25, trace, '#0A0');
       var obese = client.traceStatic('obese', 30, trace, '#A00');
-      Plotly.newPlot('data-canvas', [trace, obese, ideal]);
+      Plotly.newPlot('data-canvas', [trace, obese, ideal], layout);
       $('#data-label').html(field);
     }
     else if (client.scatterFields.includes(field)) {
       var trace = client.traceField(field, 'scatter');
       var average = client.traceAverage(field);
-      Plotly.newPlot('data-canvas', [average, trace]);
+      Plotly.newPlot('data-canvas', [average, trace], layout);
       $('#data-label').html(field);
     }
     else {
