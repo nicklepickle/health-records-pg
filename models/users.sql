@@ -7,5 +7,6 @@ create table users (
   "gender" char,
   "birthday" date,
   "fields" varchar(255),
-  "order" varchar(4)
+  "order" varchar(4),
+  "theme" varchar(16)
 )

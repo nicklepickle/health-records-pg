@@ -26,6 +26,9 @@ var client = {
       $('#id').val(0);
       $('#username').val('');
       $('#height').val('');
+      $('#feet').val('');
+      $('#inches').val('');
+      $('#light').prop('checked',true);
       $('#edit-profile').show();
       $('#username').focus();
     }
@@ -37,8 +40,15 @@ var client = {
          success: function (response) {
            $('#id').val(user);
            $('#username').val(response.username);
+           $('#' + response.theme).prop('checked',true);
            if (response.height != null) {
              $('#height').val(response.height);
+             client.m2in();
+           }
+           else {
+             $('#height').val('');
+             $('#feet').val('');
+             $('#inches').val('');
            }
            var fields = response.fields.split(',');
            for(var i=0; i<fields.length; i++) {
@@ -46,7 +56,7 @@ var client = {
              //console.log(f + '||' + fields[i]);
              $('#field-' + f).prop('checked', true);
            }
-           client.m2in();
+
            $('#edit-profile').show();
          },
          error: function (response) {

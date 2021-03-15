@@ -22,7 +22,8 @@ router.get('/', async(req, res, next) => {
       user: user,
       desc: user.order == 'desc',
       fields: fields,
-      title: user.username
+      title: user.username,
+      theme: user.theme
     });
   }
   catch(error) {
@@ -33,11 +34,15 @@ router.get('/', async(req, res, next) => {
 
 router.get('/profile', async(req, res, next) => {
   try {
+    let user = req.cookies.user;
+
+
     return res.render('profile', {
       scripts: ['profile.js'],
       fields: await records.getFields(),
       users: await users.getUsers(),
-      title: 'Select Profile'
+      title: 'Select Profile',
+      theme: user.theme ? user.theme : 'light'
     });
   }
   catch(error) {
@@ -60,17 +65,13 @@ router.post('/profile', async(req, res, next) => {
       id:req.body.id,
       username:req.body.username,
       height:req.body.height,
+      theme:req.body.theme,
       fields:fields.join()
     }
 
-    await users.setUser(params);
-
-    // if the user is logged in - update the user cookie
-    if (req.cookies.user && req.cookies.user.id == params.id) {
-      var user = await users.getUser(req.params.id);
-      res.cookie('user', user);
-    }
-
+    let userId = await users.setUser(params);
+    let user = await users.getUser(userId);
+    res.cookie('user', user);
     return res.redirect('/profile');
   }
   catch(error) {

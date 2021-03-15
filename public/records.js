@@ -3,7 +3,7 @@ var client = {
   dataFields: [],
   user: null,
   // scatter works better for fields that can't be zero or you would be dead
-  scatterFields: ['weight','pulse','basal temp'],
+  scatterFields: ['weight','pulse','basal temp','body temp'],
   traceField: function (field, type) {
     var trace = {
       x:[],
@@ -85,6 +85,10 @@ var client = {
   },
 
   plotField: function (field) {
+    var layout = {
+      plot_bgcolor:"black",
+      paper_bgcolor:"transparent"
+    }
     if (field == 'systolic' || field == 'diastolic') {
       var systolic = client.traceField('systolic', 'scatter');
       var diastolic = client.traceField('diastolic', 'scatter');
@@ -107,7 +111,7 @@ var client = {
     else {
       var trace = client.traceField(field, 'bar');
       var average = client.traceAverage(field);
-      Plotly.newPlot('data-canvas', [trace, average]);
+      Plotly.newPlot('data-canvas', [trace, average], layout);
       $('#data-label').html(field);
     }
     $('#canvas-container').show();

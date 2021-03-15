@@ -7,8 +7,7 @@ const logger = require('morgan');
 const router = require('./router');
 const config = require('./config');
 const hbs = require('hbs');
-const less = require('less');
-const fs = require('fs');
+const parser = require('./models/parser');
 const app = express();
 
 app.use(logger('dev'));
@@ -29,24 +28,11 @@ hbs.registerHelper('ID', function (field) {
 
 app.set('port', config.server.port);
 
-fs.readFile(path.join(__dirname, 'public/main.less'),function (readError, data) {
-  if (readError) {
-    console.error('Error reading main.less');
-    console.error(readError);
-    return;
-  }
-  let options = {compress:true, paths:[__dirname]};
-  less.render(data.toString(), options, function(renderError,output){
-     if (renderError) {
-        console.error('Error rendering main.less');
-        console.error(readError);
-        return;
-     }
-     fs.writeFile(path.join(__dirname, 'public/main.css'),output.css, function() {
-       console.log('Rendered main.css');
-     });
-  });
-});
+parser.parseLess('main');
+
+parser.parseLess('light');
+parser.parseLess('dark');
+
 
 let server = http.createServer(app);
 server.listen(config.server.port);

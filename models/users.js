@@ -63,18 +63,18 @@ let users = {
       if (!data.height) {
         data.height = null;
       }
-      
+
       if (data.id && data.id > 0) {
-        let values = [data.username, data.fields, data.height, data.id];
-        let sql = 'update users set "username" = $1, "fields" = $2, "height" = $3, "modified" = NOW() where "id" = $4'
+        let values = [data.username, data.fields, data.height, data.theme, data.id];
+        let sql = 'update users set "username" = $1, "fields" = $2, "height" = $3, "theme" = $4, "modified" = NOW() where "id" = $5';
         let res = await client.query(sql, values);
-        return res;
+        return data.id;
       }
       else {
-        let values = [data.username, data.fields, data.height];
-        let sql = 'insert into users ("username", "fields", "height", "modified", "password") values ($1, $2, $3,  NOW(), \'*\') returning id;'
+        let values = [data.username, data.fields, data.height, data.theme];
+        let sql = 'insert into users ("username", "fields", "height", "theme","modified", "password") values ($1, $2, $3, $4, NOW(), \'*\') returning id;'
         let res = await client.query(sql, values);
-        return res;
+        return res.rows[0].id;
       }
     }
     catch (error) {
