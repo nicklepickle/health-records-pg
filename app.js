@@ -28,8 +28,6 @@ hbs.registerHelper('ID', function (field) {
 
 app.set('port', config.server.port);
 
-parser.parseLess('main');
-
 parser.parseLess('light');
 parser.parseLess('dark');
 
