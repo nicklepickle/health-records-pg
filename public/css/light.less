@@ -1,4 +1,5 @@
 @import "main.less";
+@hover-color: #eee;
 
 body, input {
   font:13px "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -9,9 +10,14 @@ body, input {
 input[type=button]:hover,
 input[type=reset]:hover,
 input[type=submit]:hover {
-  background-color:#eee;
+  background-color:@hover-color;
+}
+
+#close-canvas:hover {
+  background-color:@hover-color;
+  color: #999;
 }
 
 .date {
-  background-color:#eee;
+  background-color:@hover-color;
 }

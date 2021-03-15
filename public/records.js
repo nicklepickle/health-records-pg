@@ -87,7 +87,7 @@ var client = {
   plotField: function (field) {
     var layout = {
       plot_bgcolor: client.user.theme == 'dark' ? 'black' : 'white',
-      paper_bgcolor: 'transparent'
+      paper_bgcolor: client.user.theme == 'dark' ? 'black' : 'white',
     }
     if (field == 'systolic' || field == 'diastolic') {
       var systolic = client.traceField('systolic', 'scatter');
