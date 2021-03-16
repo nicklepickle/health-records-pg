@@ -42,7 +42,7 @@ router.get('/profile', async(req, res, next) => {
       fields: await records.getFields(),
       users: await users.getUsers(),
       title: 'Select Profile',
-      theme: user.theme ? user.theme : 'light'
+      theme: (user && user.theme) ? user.theme : 'light'
     });
   }
   catch(error) {
