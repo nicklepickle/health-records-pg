@@ -5,9 +5,9 @@ const config = require('../config');
 
 module.exports = {
   parseLess: function(library) {
-    var lessPath = path.join(config.server.approot, 'public/css/'+library+'.less');
-    var cssPath = path.join(config.server.approot, 'public/css/'+library+'.css');
-    var root = path.join(config.server.approot, 'public/css/');
+    const root = path.join(config.server.approot, 'public/css/');
+    const lessPath = path.join(root, library+'.less');
+    const cssPath = path.join(root, library+'.css');
 
     fs.readFile(lessPath,function (readError, data) {
       if (readError) {
