@@ -30,7 +30,9 @@ var client = {
       $('#inches').val('');
       $('#light').prop('checked',true);
       $('#edit-profile').show();
-      $('#username').focus();
+
+      setTimeout(function(){ $('#username').focus(); }, 50);
+
     }
     else {
       var dt = Date.now();
