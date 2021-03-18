@@ -97,7 +97,8 @@ let records = {
   getCsv: async(user, fields) => {
     try {
       var rows = await records.getRecords(user);
-      fields.unshift('date')
+      fields.unshift('user');
+      fields.unshift('date');
       var csv = fields.join() + '\n';
       for(var i=0; i<rows.length; i++) {
         var vals = []
