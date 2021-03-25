@@ -92,7 +92,11 @@ var client = {
     if (field == 'systolic' || field == 'diastolic') {
       var systolic = client.traceField('systolic', 'scatter');
       var diastolic = client.traceField('diastolic', 'scatter');
-      Plotly.newPlot('data-canvas', [systolic, diastolic], layout);
+      var avSystolic = client.traceAverage('systolic', 'scatter');
+      avSystolic.line = {color:'#27a', dash:'dot'};
+      var avDiastolic = client.traceAverage('diastolic', 'scatter');
+      avDiastolic.line = {color:'#e71', dash:'dot'};
+      Plotly.newPlot('data-canvas', [systolic, diastolic, avSystolic, avDiastolic], layout);
       $('#data-label').html('Blood Pressure');
     }
     else if (field == 'BMI') {
@@ -105,7 +109,7 @@ var client = {
     else if (client.scatterFields.includes(field)) {
       var trace = client.traceField(field, 'scatter');
       var average = client.traceAverage(field);
-      Plotly.newPlot('data-canvas', [average, trace], layout);
+      Plotly.newPlot('data-canvas', [trace, average], layout);
       $('#data-label').html(field);
     }
     else {
