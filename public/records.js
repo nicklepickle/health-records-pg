@@ -37,7 +37,7 @@ var client = {
       mode: 'lines+markers'
     };
 
-    var m = -1, total = 0, count = 0;
+    var m = -1, total = 0, count = 0, a = 0;
     var data = client.data;
     var last = client.lastRecordWithField(field);
     var lastdt = last ? new Date(last.date) : new Date();
@@ -49,8 +49,9 @@ var client = {
       var dt = new Date(data[i].date);
       if (dt.getMonth() != m ) {
         m = dt.getMonth();
+        a = (total/count).toFixed(2);
         average.x.push(dt.getFullYear() + '-' + (m + 1) + '-' + dt.getDate());
-        average.y.push(count == 0  ? data[i][field] : total/count);
+        average.y.push(count == 0  ? data[i][field] : a);
         count = total = 0;
       }
 
@@ -58,8 +59,9 @@ var client = {
       count ++;
 
       if (dt.toDateString() == lastdt.toDateString()) {
+        a = (total/count).toFixed(2);
         average.x.push(dt.getFullYear() + '-' + (m + 1) + '-' + dt.getDate());
-        average.y.push(total/count);
+        average.y.push(a);
       }
     }
 
