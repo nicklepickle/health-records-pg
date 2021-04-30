@@ -8,5 +8,6 @@ create table users (
   "birthday" date,
   "fields" varchar(255),
   "order" varchar(4),
-  "theme" varchar(16)
+  "theme" varchar(16),
+  "persist" boolean
 )

@@ -29,6 +29,7 @@ var client = {
       $('#feet').val('');
       $('#inches').val('');
       $('#light').prop('checked',true);
+      $('#persist').prop('checked',true);
       $('#edit-profile').show();
 
       setTimeout(function(){ $('#username').focus(); }, 50);
@@ -42,7 +43,6 @@ var client = {
          success: function (response) {
            $('#id').val(user);
            $('#username').val(response.username);
-           $('#' + response.theme).prop('checked',true);
            if (response.height != null) {
              $('#height').val(response.height);
              client.m2in();
@@ -58,6 +58,9 @@ var client = {
              //console.log(f + '||' + fields[i]);
              $('#field-' + f).prop('checked', true);
            }
+
+           $('#' + response.theme).prop('checked',true);
+           $('#persist').prop('checked', response.persist);
 
            $('#edit-profile').show();
          },

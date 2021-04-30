@@ -66,12 +66,18 @@ router.post('/profile', async(req, res, next) => {
       username:req.body.username,
       height:req.body.height,
       theme:req.body.theme,
+      persist:req.body.persist?true:false,
       fields:fields.join()
     }
 
     let userId = await users.setUser(params);
     let user = await users.getUser(userId);
-    res.cookie('user', user);
+    if (user.persist) {
+      res.cookie('user', user, { maxAge: 8640 * users.persistDays});
+    }
+    else {
+      res.cookie('user', user);
+    }
     return res.redirect('/profile');
   }
   catch(error) {
@@ -82,7 +88,7 @@ router.post('/profile', async(req, res, next) => {
 
 router.get('/user/:id', async(req, res, next) => {
   try {
-    var user = await users.getUser(req.params.id);
+    let user = await users.getUser(req.params.id);
     return res.send(user);
   }
   catch(error) {
@@ -93,8 +99,13 @@ router.get('/user/:id', async(req, res, next) => {
 
 router.get('/login/:id', async(req, res, next) => {
   try {
-    var user = await users.getUser(req.params.id);
-    res.cookie('user', user);
+    let user = await users.getUser(req.params.id);
+    if (user.persist) {
+      res.cookie('user', user, { maxAge: 8640 * users.persistDays});
+    }
+    else {
+      res.cookie('user', user);
+    }
     return res.redirect('/');
   }
   catch(error) {
