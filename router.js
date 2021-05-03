@@ -73,7 +73,7 @@ router.post('/profile', async(req, res, next) => {
     let userId = await users.setUser(params);
     let user = await users.getUser(userId);
     if (user.persist) {
-      res.cookie('user', user, { maxAge: 8640 * users.persistDays});
+      res.cookie('user', user, { maxAge: 10000 * 8640 * users.persistDays});
     }
     else {
       res.cookie('user', user);
@@ -101,7 +101,7 @@ router.get('/login/:id', async(req, res, next) => {
   try {
     let user = await users.getUser(req.params.id);
     if (user.persist) {
-      res.cookie('user', user, { maxAge: 8640 * users.persistDays});
+      res.cookie('user', user, { maxAge: 10000 * 8640 * users.persistDays});
     }
     else {
       res.cookie('user', user);
