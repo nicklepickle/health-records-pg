@@ -152,4 +152,19 @@ router.post('/records', async(req, res, next) => {
   }
 });
 
+router.get('/delete/:id', async(req, res, next) => {
+  try {
+    if (!req.cookies.user) {
+      return res.redirect('/profile');
+    }
+    let user = req.cookies.user;
+    var deleted = await records.deleteRecord(user.id, req.params.id);
+    return res.redirect('/');
+  }
+  catch(error) {
+    console.error(error);
+    return res.send(error);
+  }
+});
+
 module.exports = router;

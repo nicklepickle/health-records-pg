@@ -145,6 +145,7 @@ var client = {
         field + '</a></th>');
       }
     };
+    headers.append('<td class="ghost-col"></td>');
 
     /*
     if (client.user.order == 'desc') {
@@ -220,13 +221,14 @@ var client = {
 
   renderRow: function(record, id) {
     var row ='<tr>';
+    var dt = new Date(record.date).toLocaleDateString('en-US')
     for(var i = 0; i < client.dataFields.length; i++) {
       var field = client.dataFields[i];
       var cell = record[field] == null ? '' : record[field];
 
       if (record.id == id) {
         // this is the row selected for editing
-        var value = field == 'date' ? new Date(cell).toLocaleDateString('en-US') : cell;
+        var value = field == 'date' ? dt : cell;
         cell = '<input type="text" value="'+value+'" name="'+field+'" /></td>';
       }
       else if (field== 'date') {
@@ -239,6 +241,10 @@ var client = {
         var bmi = client.getBMI(client.user.height, record.weight);
         row +='<td>'+bmi+'</td>';
       }
+    }
+    if (record.id == id) {
+      row += '<td class="ghost-col">' +
+      '<a href="javascript:client.deleteRecord('+id+',\''+dt+'\')" class="x">&times;</a></td>';
     }
     row += '</tr>';
     return row;
@@ -261,6 +267,13 @@ var client = {
       bmi = (kg / cm / cm * 10000).toFixed(2);
     }
     return bmi;
+  },
+
+  deleteRecord: function(id, dt) {
+    // @todo get date?
+    if (confirm('Are you sure you want to delete ' + dt + '?')) {
+      location = '/delete/' + id;
+    }
   },
 
   getCookieValue: function (a) {

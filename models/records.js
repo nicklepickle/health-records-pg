@@ -57,7 +57,7 @@ let records = {
         sql = 'insert into records ('+ fields.join() +') values (' + values.join() + ')';
       }
 
-      console.log('running: ' + sql);
+      console.log('Running: ' + sql);
       const res = await client.query(sql);
       return res;
     }
@@ -117,6 +117,26 @@ let records = {
     catch (error) {
       console.error('Error generating records csv for user ' + user);
       throw(error);
+    }
+  },
+  deleteRecord: async(user, id) => {
+    let client = null;
+    try {
+      client = await pool.getClient();
+      let sql = 'delete from records where "user" = $1 and "id" = $2';
+      const res = await client.query(sql, [user,id]);
+      //console.log(JSON.stringify(res));
+      console.log('Deleted ' + res.rowCount + ' record(s)');
+      return res.rowCount;
+    }
+    catch (error) {
+      console.error('Error selecting records for user ' + user);
+      throw(error);
+    }
+    finally {
+      if (client) {
+        client.release();
+      }
     }
   }
 }
