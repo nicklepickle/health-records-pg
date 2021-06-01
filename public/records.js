@@ -41,12 +41,14 @@ var client = {
     var data = client.data;
     var last = client.lastRecordWithField(field);
     var lastdt = last ? new Date(last.date) : new Date();
+    var today = new Date().getDate();
     for(var i=0; i<data.length; i++) {
       if (data[i][field] == null) {
         continue;
       }
 
       var dt = new Date(data[i].date);
+      // plot the average of the previous month on the 1st of each month
       if (dt.getMonth() != m ) {
         m = dt.getMonth();
         a = (total/count).toFixed(2);
@@ -57,8 +59,8 @@ var client = {
 
       total += Number(data[i][field]);
       count ++;
-
-      if (dt.toDateString() == lastdt.toDateString()) {
+      // plot the average for the current month unless it's the 1st
+      if (dt.toDateString() == lastdt.toDateString() && today != 1) {
         a = (total/count).toFixed(2);
         average.x.push(dt.getFullYear() + '-' + (m + 1) + '-' + dt.getDate());
         average.y.push(a);
@@ -146,14 +148,6 @@ var client = {
       }
     };
     headers.append('<td class="ghost-col"></td>');
-
-    /*
-    if (client.user.order == 'desc') {
-      data.sort(function(a,b) {
-        return new Date(b.date) < new Date(a.date);
-      });
-    }
-    */
 
     $('#data-table').html(headers);
     var newRow = '';
@@ -270,7 +264,6 @@ var client = {
   },
 
   deleteRecord: function(id, dt) {
-    // @todo get date?
     if (confirm('Are you sure you want to delete ' + dt + '?')) {
       location = '/delete/' + id;
     }
