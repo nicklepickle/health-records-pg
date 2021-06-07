@@ -19,7 +19,8 @@ router.get('/', async(req, res, next) => {
 
     return res.render('index', {
       scripts: ['records.js'],
-      user: user,
+      user: JSON.stringify(user),
+      userId: user.id,
       desc: user.order == 'desc',
       fields: fields,
       title: user.username,
@@ -114,14 +115,17 @@ router.get('/login/:id', async(req, res, next) => {
   }
 });
 
-router.get('/records/:id', async(req, res, next) => {
+router.get('/records', async(req, res, next) => {
   try {
+    if (!req.cookies.user) {
+      throw('No user selected.')
+    }
+    let user = req.cookies.user;
     if (!req.query.format || req.query.format == 'json') {
-      var rows = await records.getRecords(req.params.id);
+      var rows = await records.getRecords(user.id);
       return res.send(rows);
     }
     else if (req.query.format == 'csv') {
-      var user = await users.getUser(req.params.id);
       var fields = user.fields.split(',');
       var csv = await records.getCsv(user.id, fields);
       res.set('Content-Type', 'application/octet-stream');

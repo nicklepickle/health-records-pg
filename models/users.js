@@ -22,7 +22,11 @@ let users = {
       client = await pool.getClient();
       const sql = 'select * from users where id = $1';
       const res = await client.query(sql, [id]);
-      return res.rows.length == 0 ? null : res.rows[0];
+      let user = res.rows.length == 0 ? null : res.rows[0];
+      if (user) {
+        delete user.password;
+      }
+      return user;
     }
     catch (error) {
       console.error('Error selecting user');
