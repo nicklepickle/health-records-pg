@@ -37,37 +37,42 @@ client.edit = function(user) {
 
   }
   else {
-    var dt = Date.now();
-    $.ajax({
-       dataType: 'json',
-       url: '/user/' + user +'?dt=' + dt,
-       success: function (response) {
-         $('#id').val(user);
-         $('#username').val(response.username);
-         if (response.height != null) {
-           $('#height').val(response.height);
-           client.m2in();
-         }
-         else {
-           $('#height').val('');
-           $('#feet').val('');
-           $('#inches').val('');
-         }
-         var fields = response.fields.split(',');
-         for(var i=0; i<fields.length; i++) {
-           var f = fields[i].replace(' ','-');
-           //console.log(f + '||' + fields[i]);
-           $('#field-' + f).prop('checked', true);
-         }
+    if (!client.user || user != client.user.id) {
+      var bounce = encodeURIComponent('/profile?edit=' + user)
+      window.location = '/login/' + user + '?bounce=' + bounce;
+    }
+   $('#id').val(user);
+   $('#username').val(client.user.username);
+   if (client.user.height != null) {
+     $('#height').val(client.user.height);
+     client.m2in();
+   }
+   else {
+     $('#height').val('');
+     $('#feet').val('');
+     $('#inches').val('');
+   }
+   var fields = client.user.fields.split(',');
+   for(var i=0; i<fields.length; i++) {
+     var f = fields[i].replace(' ','-');
+     //console.log(f + '||' + fields[i]);
+     $('#field-' + f).prop('checked', true);
+   }
 
-         $('#' + response.theme).prop('checked',true);
-         $('#persist').prop('checked', response.persist);
+   $('#' + client.user.theme).prop('checked',true);
+   $('#persist').prop('checked', client.user.persist);
 
-         $('#edit-profile').show();
-       },
-       error: function (response) {
-          console.error(response);
-       }
-    });
+   $('#edit-profile').show();
   }
 };
+
+
+$(document).ready(function() {
+  var n = window.location.search.indexOf('edit=');
+  if (n > -1) {
+    // @todo - this won't handle any additional params
+    var user = window.location.search.substring(n + 5);
+    client.edit(user);
+  }
+
+});

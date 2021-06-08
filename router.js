@@ -37,9 +37,9 @@ router.get('/profile', async(req, res, next) => {
   try {
     let user = req.cookies.user;
 
-
     return res.render('profile', {
       scripts: ['profile.js'],
+      user: user ? JSON.stringify(user) : null,
       fields: await records.getFields(),
       users: await users.getUsers(),
       title: 'Select Profile',
@@ -54,6 +54,11 @@ router.get('/profile', async(req, res, next) => {
 
 router.post('/profile', async(req, res, next) => {
   try {
+    let user = req.cookies.user;
+    // only allow a new user or logged in user to update a profile
+    if (req.body.id != 0 && req.body.id != user.id) {
+      return res.redirect('/profile');
+    }
     let fields = [];
     let keys = Object.keys(req.body);
     for(var i=0; i<keys.length; i++) {
@@ -72,7 +77,9 @@ router.post('/profile', async(req, res, next) => {
     }
 
     let userId = await users.setUser(params);
-    let user = await users.getUser(userId);
+
+    // update the user and cookie
+    user = await users.getUser(userId);
     if (user.persist) {
       res.cookie('user', user, { maxAge: 1000 * 86400 * users.persistDays});
     }
@@ -80,17 +87,6 @@ router.post('/profile', async(req, res, next) => {
       res.cookie('user', user);
     }
     return res.redirect('/profile');
-  }
-  catch(error) {
-    console.error(error);
-    return res.send(error);
-  }
-});
-
-router.get('/user/:id', async(req, res, next) => {
-  try {
-    let user = await users.getUser(req.params.id);
-    return res.send(user);
   }
   catch(error) {
     console.error(error);
@@ -106,6 +102,10 @@ router.get('/login/:id', async(req, res, next) => {
     }
     else {
       res.cookie('user', user);
+    }
+    // only allow bounce to local paths
+    if (req.query.bounce && req.query.bounce[0] == '/') {
+      return res.redirect(req.query.bounce);
     }
     return res.redirect('/');
   }
@@ -141,7 +141,9 @@ router.get('/records', async(req, res, next) => {
 
 router.post('/records', async(req, res, next) => {
   try {
-    if (!req.cookies.user) {
+    let user = req.cookies.user;
+    // no user is logged in or update is not for logged in user
+    if (!user || req.body.user != user.id) {
       return res.redirect('/profile');
     }
     let fields = req.cookies.user.fields.split(',');
