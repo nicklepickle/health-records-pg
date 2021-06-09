@@ -98,14 +98,9 @@ router.get('/login/:id', async(req, res, next) => {
         console.error(error);
       }
       let user = await users.getUser(req.params.id);
-
       if (!user.persist) {
         req.session.cookie.maxAge = null;
       }
-      else {
-        req.session.cookie.maxAge = config.session.maxAge;
-      }
-
       req.session.user = user;
       // only allow bounce to local paths
       if (req.query.bounce && req.query.bounce[0] == '/') {
