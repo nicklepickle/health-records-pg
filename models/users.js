@@ -112,8 +112,7 @@ let users = {
     finally {
       client.release();
     }
-  },
-  persistDays: 60
+  }
 }
 
 module.exports = users;

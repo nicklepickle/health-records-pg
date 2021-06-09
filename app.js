@@ -1,5 +1,7 @@
 const http = require('http');
 const express = require('express');
+const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
 const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -8,6 +10,7 @@ const router = require('./router');
 const config = require('./config');
 const hbs = require('hbs');
 const parser = require('./models/parser');
+const pool = require('./models/pool');
 const app = express();
 
 app.use(logger('dev'));
@@ -15,7 +18,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-//app.use(less(path.join(__dirname, 'public')));
+app.use(session({
+  name : config.session.name,
+  store: new pgSession({
+    pool:pool.pool
+  }),
+  secret: config.session.key,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: config.session.maxAge}
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', router);

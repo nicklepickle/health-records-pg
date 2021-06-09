@@ -275,7 +275,7 @@ $(document).ready(function() {
   client.dataFields.unshift('date');
   $.ajax({
      dataType: 'json',
-     url: '/records',
+     url: '/records?dt=' + Date.now(),
      success: function (response) {
         client.data = response;
         client.renderTable(0);

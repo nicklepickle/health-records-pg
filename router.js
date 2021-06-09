@@ -2,19 +2,21 @@ const express = require('express');
 const router = express.Router();
 const records = require('./models/records');
 const users = require('./models/users');
+const config = require('./config.js')
 
 router.get('/', async(req, res, next) => {
   try {
-    if (!req.cookies.user) {
+    if (!req.session || !req.session.user) {
       return res.redirect('/profile');
     }
-    let user = req.cookies.user;
+
+    let user = req.session.user;
     let fields = user.fields.split(',');
     fields.unshift('date');
     if (req.query.order && user.order != req.query.order) {
-      await users.setOrder(req.cookies.user.id, req.query.order);
-      user = await users.getUser(req.cookies.user.id);
-      res.cookie('user', user);
+      await users.setOrder(req.session.user.id, req.query.order);
+      user = await users.getUser(req.session.user.id);
+      res.session.user = user;
     }
 
     return res.render('index', {
@@ -35,7 +37,7 @@ router.get('/', async(req, res, next) => {
 
 router.get('/profile', async(req, res, next) => {
   try {
-    let user = req.cookies.user;
+    let user = req.session.user;
 
     return res.render('profile', {
       scripts: ['profile.js'],
@@ -54,7 +56,7 @@ router.get('/profile', async(req, res, next) => {
 
 router.post('/profile', async(req, res, next) => {
   try {
-    let user = req.cookies.user;
+    let user = req.session.user;
     // only allow a new user or logged in user to update a profile
     if (req.body.id != 0 && req.body.id != user.id) {
       return res.redirect('/profile');
@@ -78,14 +80,9 @@ router.post('/profile', async(req, res, next) => {
 
     let userId = await users.setUser(params);
 
-    // update the user and cookie
-    user = await users.getUser(userId);
-    if (user.persist) {
-      res.cookie('user', user, { maxAge: 1000 * 86400 * users.persistDays});
-    }
-    else {
-      res.cookie('user', user);
-    }
+    // update the user
+    req.session.user = await users.getUser(userId);
+
     return res.redirect('/profile');
   }
   catch(error) {
@@ -96,18 +93,27 @@ router.post('/profile', async(req, res, next) => {
 
 router.get('/login/:id', async(req, res, next) => {
   try {
-    let user = await users.getUser(req.params.id);
-    if (user.persist) {
-      res.cookie('user', user, { maxAge: 1000 * 86400 * users.persistDays});
-    }
-    else {
-      res.cookie('user', user);
-    }
-    // only allow bounce to local paths
-    if (req.query.bounce && req.query.bounce[0] == '/') {
-      return res.redirect(req.query.bounce);
-    }
-    return res.redirect('/');
+    req.session.regenerate( async(error) => {
+      if (error) {
+        console.error(error);
+      }
+      let user = await users.getUser(req.params.id);
+
+      if (!user.persist) {
+        req.session.cookie.maxAge = null;
+      }
+      else {
+        req.session.cookie.maxAge = config.session.maxAge;
+      }
+
+      req.session.user = user;
+      // only allow bounce to local paths
+      if (req.query.bounce && req.query.bounce[0] == '/') {
+        return res.redirect(req.query.bounce);
+      }
+      return res.redirect('/');
+
+    });
   }
   catch(error) {
     console.error(error);
@@ -117,10 +123,10 @@ router.get('/login/:id', async(req, res, next) => {
 
 router.get('/records', async(req, res, next) => {
   try {
-    if (!req.cookies.user) {
-      throw('No user selected.')
+    if (!req.session.user) {
+      throw('No user session.')
     }
-    let user = req.cookies.user;
+    let user = req.session.user;
     if (!req.query.format || req.query.format == 'json') {
       var rows = await records.getRecords(user.id);
       return res.send(rows);
@@ -141,12 +147,12 @@ router.get('/records', async(req, res, next) => {
 
 router.post('/records', async(req, res, next) => {
   try {
-    let user = req.cookies.user;
+    let user = req.session.user;
     // no user is logged in or update is not for logged in user
     if (!user || req.body.user != user.id) {
       return res.redirect('/profile');
     }
-    let fields = req.cookies.user.fields.split(',');
+    let fields = user.fields.split(',');
     fields.unshift('date','user');
 
     await records.setRecord(fields, req.body);
@@ -160,10 +166,10 @@ router.post('/records', async(req, res, next) => {
 
 router.get('/delete/:id', async(req, res, next) => {
   try {
-    if (!req.cookies.user) {
+    if (!req.session.user) {
       return res.redirect('/profile');
     }
-    let user = req.cookies.user;
+    let user = req.session.user;
     var deleted = await records.deleteRecord(user.id, req.params.id);
     return res.redirect('/');
   }
