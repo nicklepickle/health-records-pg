@@ -14,9 +14,9 @@ router.get('/', async(req, res, next) => {
     let fields = user.fields.split(',');
     fields.unshift('date');
     if (req.query.order && user.order != req.query.order) {
-      await users.setOrder(req.session.user.id, req.query.order);
-      user = await users.getUser(req.session.user.id);
-      res.session.user = user;
+      await users.setOrder(user.id, req.query.order);
+      user = await users.getUser(user.id);
+      req.session.user = user;
     }
 
     return res.render('index', {
@@ -31,7 +31,7 @@ router.get('/', async(req, res, next) => {
   }
   catch(error) {
     console.error(error);
-    return res.send(error);
+    return next(error);
   }
 });
 
@@ -50,7 +50,7 @@ router.get('/profile', async(req, res, next) => {
   }
   catch(error) {
     console.error(error);
-    return res.send(error);
+    return next(error);
   }
 });
 
@@ -87,7 +87,7 @@ router.post('/profile', async(req, res, next) => {
   }
   catch(error) {
     console.error(error);
-    return res.send(error);
+    return next(error);
   }
 });
 
@@ -112,7 +112,7 @@ router.get('/login/:id', async(req, res, next) => {
   }
   catch(error) {
     console.error(error);
-    return res.send(error);
+    return next(error);
   }
 });
 
@@ -136,7 +136,7 @@ router.get('/records', async(req, res, next) => {
   }
   catch(error) {
     console.error(error);
-    return res.send(error);
+    return next(error);
   }
 });
 
@@ -155,7 +155,7 @@ router.post('/records', async(req, res, next) => {
   }
   catch(error) {
     console.error(error);
-    return res.send(error);
+    return next(error);
   }
 });
 
@@ -170,7 +170,7 @@ router.get('/delete/:id', async(req, res, next) => {
   }
   catch(error) {
     console.error(error);
-    return res.send(error);
+    return next(error);
   }
 });
 

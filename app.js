@@ -40,6 +40,33 @@ hbs.registerHelper('ID', function (field) {
 
 app.set('port', config.server.port);
 
+// catch 404s
+app.use(function(req, res, next) {
+  let err = new Error('Page not found');
+  let user = req.session.user;
+  err.status = 404;
+  res.status(404);
+  res.render('error',{
+    title:'Not found',
+    theme: (user && user.theme) ? user.theme : 'light',
+    error:err
+  });
+});
+
+// error handler
+app.use(function(err, req, res, next) {
+  let user = req.session.user;
+  if (!err.status) {
+    err.status = 500;
+  }
+  res.status(err.status);
+  res.render('error',{
+    title:'Error',
+    theme: (user && user.theme) ? user.theme : 'light',
+    error:err
+  });
+});
+
 parser.parseLess('light');
 parser.parseLess('dark');
 
