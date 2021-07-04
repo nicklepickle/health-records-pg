@@ -3,6 +3,7 @@ const router = express.Router();
 const records = require('./models/records');
 const users = require('./models/users');
 const config = require('./config.js')
+const bcrypt = require('bcrypt');
 
 router.get('/', async(req, res, next) => {
   try {
@@ -75,6 +76,8 @@ router.post('/profile', async(req, res, next) => {
       height:req.body.height,
       theme:req.body.theme,
       persist:req.body.persist?true:false,
+      protected:req.body.protected?true:false,
+      password:req.body.password,
       fields:fields.join()
     }
 
@@ -91,20 +94,25 @@ router.post('/profile', async(req, res, next) => {
   }
 });
 
-router.get('/login/:id', async(req, res, next) => {
+router.post('/login', async(req, res, next) => {
   try {
     req.session.regenerate( async(error) => {
       if (error) {
         console.error(error);
       }
-      let user = await users.getUser(req.params.id);
+      let user = await users.getUser(req.body.user);
+      if (user.protected && !bcrypt.compareSync(req.body.login, user.password)) {
+        return res.redirect('/profile?failed=' + req.body.user);
+      }
+
       if (!user.persist) {
         req.session.cookie.maxAge = null;
       }
       req.session.user = user;
       // only allow bounce to local paths
-      if (req.query.bounce && req.query.bounce[0] == '/') {
-        return res.redirect(req.query.bounce);
+      if (req.body.bounce && req.body.bounce[0] == '/') {
+        return res.redirect(req.body.bounce);
+
       }
       return res.redirect('/');
 

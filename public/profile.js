@@ -19,7 +19,17 @@ client.in2m = function() {
   }
 };
 
-client.edit = function(user) {
+client.login = function(user, protected) {
+  $('#user').val(user);
+  if (!protected) {
+    $('#login-form').submit();
+  }
+  else {
+    $('#login-overlay').show();
+  }
+}
+
+client.edit = function(user, protected) {
   $('.field-select input[type=checkbox]').each(function(){
     $(this).prop('checked', false);
   });
@@ -38,8 +48,9 @@ client.edit = function(user) {
   }
   else {
     if (!client.user || user != client.user.id) {
-      var bounce = encodeURIComponent('/profile?edit=' + user)
-      window.location = '/login/' + user + '?bounce=' + bounce;
+      $('#bounce').val('/profile?edit=' + user);
+      client.login(user, protected);
+      return;
     }
    $('#id').val(user);
    $('#username').val(client.user.username);
@@ -61,18 +72,36 @@ client.edit = function(user) {
 
    $('#' + client.user.theme).prop('checked',true);
    $('#persist').prop('checked', client.user.persist);
-
+   $('#protected').prop('checked', client.user.protected);
+   client.togglePassword();
    $('#edit-profile').show();
+  }
+};
+
+client.togglePassword = function() {
+  if ($('#protected').prop('checked')) {
+    $('#password-container').show();
+  }
+  else {
+    $('#password-container').hide();
   }
 };
 
 
 $(document).ready(function() {
+  // @todo!!! - fix this mess
   var n = window.location.search.indexOf('edit=');
   if (n > -1) {
     // @todo - this won't handle any additional params
     var user = window.location.search.substring(n + 5);
     client.edit(user);
   }
-
+  n = window.location.search.indexOf('failed=');
+  if (n > -1) {
+    // @todo - this won't handle any additional params
+    var user = window.location.search.substring(n + 7);
+    $('#login-error').show();
+    console.log('failed user = ' + user);
+    client.login(user, true);
+  }
 });

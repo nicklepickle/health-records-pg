@@ -1,4 +1,6 @@
 const pool = require('./pool');
+const bcrypt = require('bcrypt');
+
 let users = {
   getUsers: async() =>  {
     let client = null;
@@ -23,9 +25,7 @@ let users = {
       const sql = 'select * from users where id = $1';
       const res = await client.query(sql, [id]);
       let user = res.rows.length == 0 ? null : res.rows[0];
-      if (user) {
-        delete user.password;
-      }
+
       return user;
     }
     catch (error) {
@@ -68,6 +68,11 @@ let users = {
         data.height = null;
       }
 
+      let hash = '*';
+      if (data.password && data.password.length > 0) {
+        hash = await bcrypt.hash(data.password, 12);
+      }
+
       if (data.id && data.id > 0) {
         let values = [
           data.username,
@@ -75,6 +80,7 @@ let users = {
           data.height,
           data.theme,
           data.persist,
+          data.protected,
           data.id];
         let sql =
         `update users
@@ -83,8 +89,15 @@ let users = {
           "height" = $3,
           "theme" = $4,
           "persist" = $5,
-          "modified" = NOW()
-        where "id" = $6`;
+          "protected" = $6,`;
+        if (hash != '*') {
+          values.push(hash);
+          sql +=
+          `"password" = $8,`
+        }
+          sql +=
+          `"modified" = NOW()
+        where "id" = $7`;
         let res = await client.query(sql, values);
         return data.id;
       }
@@ -94,12 +107,14 @@ let users = {
           data.fields,
           data.height,
           data.theme,
-          data.persist];
+          data.persist,
+          data.protected,
+          hash];
         let sql =
         `insert into users
-          ("username","fields","height","theme","persist","modified","password")
+          ("username","fields","height","theme","persist","protected","password","modified")
         values
-          ($1, $2, $3, $4, $5, NOW(),'*')
+          ($1, $2, $3, $4, $5, $6, $7, NOW())
         returning id;`;
         let res = await client.query(sql, values);
         return res.rows[0].id;

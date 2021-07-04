@@ -4,10 +4,10 @@ create table users (
   "password" varchar(64) not null,
   "modified" date,
   "height" real,
-  "gender" char,
   "birthday" date,
   "fields" varchar(255),
   "order" varchar(4),
   "theme" varchar(16),
-  "persist" boolean
+  "persist" boolean,
+  "protected" boolean
 )
