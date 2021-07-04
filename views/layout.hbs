@@ -7,6 +7,14 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/1.58.4/plotly.min.js"></script>
   <script>
   var client = {};
+  client.params = {};
+  if (location.search) {
+    var pairs = location.search.substring(1).split('&');
+    for(var i = 0; i<pairs.length; i++) {
+      var pair = pairs[i].split('=');
+      client.params[pair[0]] = pair[1] || null;
+    }
+  }
   {{#if user}}
   client.user = {{{user}}};
   {{/if}}

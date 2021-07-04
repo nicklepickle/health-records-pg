@@ -89,19 +89,11 @@ client.togglePassword = function() {
 
 
 $(document).ready(function() {
-  // @todo!!! - fix this mess
-  var n = window.location.search.indexOf('edit=');
-  if (n > -1) {
-    // @todo - this won't handle any additional params
-    var user = window.location.search.substring(n + 5);
-    client.edit(user);
-  }
-  n = window.location.search.indexOf('failed=');
-  if (n > -1) {
-    // @todo - this won't handle any additional params
-    var user = window.location.search.substring(n + 7);
+  if (client.params.failed) {
+    client.login(client.params.failed, true);
     $('#login-error').show();
-    console.log('failed user = ' + user);
-    client.login(user, true);
+  }
+  else if (client.params.edit) {
+    client.edit(client.params.edit);
   }
 });
