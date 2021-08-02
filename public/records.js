@@ -40,7 +40,7 @@ client.traceAverage = function(field, m, y) {
   var data = client.data;
   var last = client.lastRecordWithField(field);
   var lastdt = last ? new Date(last.date) : new Date();
-  var today = new Date().getDate();
+  //var today = new Date().getDate();
   for(var i=0; i<data.length; i++) {
     if (data[i][field] == null) {
       continue;
@@ -58,8 +58,8 @@ client.traceAverage = function(field, m, y) {
 
     total += Number(data[i][field]);
     count ++;
-    // plot the average for the current month unless it's the 1st
-    if (dt.toDateString() == lastdt.toDateString() && today != 1) {
+    // plot the average for the current month if there is more than one date
+    if (dt.toDateString() == lastdt.toDateString() && count > 1) {
       a = (total/count).toFixed(2);
       average.x.push(dt.getFullYear() + '-' + (m + 1) + '-' + dt.getDate());
       average.y.push(a);
